@@ -18,9 +18,7 @@ public class Ping implements MessageCreateListener {
                     .asJson().getBody());
 
 
-            //System.out.println(ping);
-
-            event.getChannel().sendMessage(ping);
+            System.out.println(ping);
             Unirest.shutDown();
         }
     }
