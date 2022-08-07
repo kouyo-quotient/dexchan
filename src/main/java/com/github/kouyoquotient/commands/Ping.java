@@ -12,6 +12,11 @@ public class Ping implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (event.getMessageContent().equalsIgnoreCase("!poke")) {
+            if (!event.getMessageAuthor().isBotOwner()) {
+                event.getChannel().sendMessage("Comando restringido.");
+                return;
+            }
+
             Unirest.config().defaultBaseUrl("https://api.mangadex.org");
             String ping = String.valueOf(Unirest.get("/chapter?limit=32&offset=0&translatedLanguage[]=es-la&translatedLanguage[]=es&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&order[readableAt]=desc")
                     .header("accept", "application/json")
