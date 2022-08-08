@@ -2,6 +2,7 @@ package com.github.kouyoquotient;
 
 import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
 import com.github.kouyoquotient.commands.Poke;
+import com.github.kouyoquotient.commands.support.FuncionesCommand;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ public class Main {
                 .join();
 
         // Register commands
+        api.addMessageCreateListener(new FuncionesCommand());
         api.addMessageCreateListener(new Poke());
         api.addMessageCreateListener(new BuildRoleSelectorCommand());
 
