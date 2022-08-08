@@ -19,11 +19,12 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (event.getMessageContent().equalsIgnoreCase("!buildroleselector")) {
-            logger.info("Received command component instruction");
             if (!event.getMessageAuthor().isBotOwner()) {
                 event.getChannel().sendMessage("Comando restringido.");
                 return;
             }
+
+            logger.info("Received command component instruction");
 
             EmbedBuilder embed = new EmbedBuilder()
                     .setTitle("Elige tu destino")
