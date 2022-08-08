@@ -4,7 +4,7 @@ import kong.unirest.Unirest;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
-public class Ping implements MessageCreateListener {
+public class Poke implements MessageCreateListener {
 
     /*
      * TODO: Catch the chapters ID, then build the URL and send them into Discord.
