@@ -32,7 +32,6 @@ public class FuncionesCommand implements MessageCreateListener {
             new MessageBuilder()
                     .setAllowedMentions(allowedMentions)
                     .append("> <@" + authorId + ">")
-                    .appendNewLine()
                     .append("""
                             \nLo que puedes hacer ahora mismo:
                             1. Buscar obras.
