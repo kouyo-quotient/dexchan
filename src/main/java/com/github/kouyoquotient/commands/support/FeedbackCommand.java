@@ -20,7 +20,7 @@ public class FeedbackCommand implements MessageCreateListener {
         }
 
         if (event.getMessageContent().equalsIgnoreCase("!feedback")) {
-            logger.info("Received funciones command instruction");
+            logger.info("Received feedback command instruction");
             long authorId = event.getMessageAuthor().getId();
 
             AllowedMentions allowedMentions = new AllowedMentionsBuilder()
