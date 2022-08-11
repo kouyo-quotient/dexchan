@@ -1,4 +1,4 @@
-package com.github.kouyoquotient.commands.support;
+package com.github.kouyoquotient.commands.supportchannel;
 
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;

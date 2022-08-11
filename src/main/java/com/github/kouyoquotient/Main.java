@@ -2,9 +2,9 @@ package com.github.kouyoquotient;
 
 import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
 import com.github.kouyoquotient.commands.Poke;
-import com.github.kouyoquotient.commands.support.DiagnosticoCommand;
-import com.github.kouyoquotient.commands.support.FeedbackCommand;
-import com.github.kouyoquotient.commands.support.FuncionesCommand;
+import com.github.kouyoquotient.commands.supportchannel.DiagnosticoCommand;
+import com.github.kouyoquotient.commands.supportchannel.FeedbackCommand;
+import com.github.kouyoquotient.commands.supportchannel.FuncionesCommand;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
