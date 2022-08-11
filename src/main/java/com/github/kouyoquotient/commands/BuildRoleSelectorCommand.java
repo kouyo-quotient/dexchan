@@ -1,8 +1,6 @@
 package com.github.kouyoquotient.commands;
 
 import com.vdurmont.emoji.EmojiParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.SelectMenu;
@@ -13,9 +11,9 @@ import org.javacord.api.listener.message.MessageCreateListener;
 
 import java.util.ArrayList;
 
-public class BuildRoleSelectorCommand implements MessageCreateListener {
-    static final Logger logger = LogManager.getRootLogger();
+import static com.github.kouyoquotient.Main.logger;
 
+public class BuildRoleSelectorCommand implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (event.getMessageContent().equalsIgnoreCase("!buildroleselector")) {

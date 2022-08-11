@@ -1,13 +1,12 @@
 package com.github.kouyoquotient.commands;
 
 import kong.unirest.Unirest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
+import static com.github.kouyoquotient.Main.logger;
+
 public class Poke implements MessageCreateListener {
-    static final Logger logger = LogManager.getRootLogger();
 
     /*
      * TODO: Catch the chapters ID, then build the URL and send them into Discord.
