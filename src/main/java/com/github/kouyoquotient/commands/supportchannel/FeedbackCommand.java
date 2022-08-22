@@ -7,18 +7,18 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
 import static com.github.kouyoquotient.Main.logger;
+import static com.github.kouyoquotient.utils.Constants.SUPPORT_CHANNEL;
 
 public class FeedbackCommand implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        long supportChannel = 864252859296907294L;
-
-        if (event.getChannel().getId() != supportChannel) {
-            return;
-        }
-
         if (event.getMessageContent().equalsIgnoreCase("!feedback")) {
-            logger.info("Received feedback command instruction");
+            // Command is restricted to the support channel
+            if (event.getChannel().getId() != SUPPORT_CHANNEL) {
+                return;
+            }
+
+            logger.info("Received instruction for command feedback");
             long authorId = event.getMessageAuthor().getId();
 
             AllowedMentions allowedMentions = new AllowedMentionsBuilder()

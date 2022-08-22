@@ -9,6 +9,9 @@ import org.javacord.api.listener.interaction.MessageComponentCreateListener;
 
 import java.util.Optional;
 
+import static com.github.kouyoquotient.utils.Constants.LECTOR_ROLE;
+import static com.github.kouyoquotient.utils.Constants.SCANLATOR_ROLE;
+
 public class RoleSelectorListener implements MessageComponentCreateListener {
 
     @Override
@@ -36,29 +39,28 @@ public class RoleSelectorListener implements MessageComponentCreateListener {
 
             switch (valueId) {
                 case "one" -> {
-                    if(api.getRoleById("1003423707252928603").orElseThrow().hasUser(menuInteraction.getUser())){
+                    if(api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(menuInteraction.getUser())){
                         return;
                     }
 
                     componentInteraction.orElseThrow()
                             .respondLater(true)
-                            .thenAcceptAsync(interactionOriginalResponseUpdater -> {
-                                api.getRoleById("1003423715964493954").orElseThrow().removeUser(menuInteraction.getUser()).thenAcceptAsync(roleChange -> {
-                                    api.getRoleById("1003423707252928603").orElseThrow().addUser(menuInteraction.getUser()).join();
-                                    interactionOriginalResponseUpdater.setContent("Seleccionado rol <@&1003423707252928603>.").update();
-                                });
-                            });
+                            .thenAcceptAsync(interactionOriginalResponseUpdater ->
+                                    api.getRoleById(LECTOR_ROLE).orElseThrow().removeUser(menuInteraction.getUser()).thenAcceptAsync(roleChange -> {
+                                api.getRoleById(SCANLATOR_ROLE).orElseThrow().addUser(menuInteraction.getUser()).join();
+                                interactionOriginalResponseUpdater.setContent("Seleccionado rol <@&1003423707252928603>.").update();
+                            }));
                 }
                 case "two" -> {
-                    if(api.getRoleById("1003423715964493954").orElseThrow().hasUser(menuInteraction.getUser())){
+                    if(api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(menuInteraction.getUser())){
                         return;
                     }
 
                     componentInteraction.orElseThrow()
                             .respondLater(true)
                             .thenAcceptAsync(interactionOriginalResponseUpdater -> {
-                                api.getRoleById("1003423707252928603").orElseThrow().removeUser(menuInteraction.getUser()).thenAcceptAsync(roleChange ->{
-                                    api.getRoleById("1003423715964493954").orElseThrow().addUser(menuInteraction.getUser());
+                                api.getRoleById(SCANLATOR_ROLE).orElseThrow().removeUser(menuInteraction.getUser()).thenAcceptAsync(roleChange ->{
+                                    api.getRoleById(LECTOR_ROLE).orElseThrow().addUser(menuInteraction.getUser());
                                     interactionOriginalResponseUpdater.setContent("Seleccionado rol <@&1003423715964493954>.").update();
                                 });
                             });

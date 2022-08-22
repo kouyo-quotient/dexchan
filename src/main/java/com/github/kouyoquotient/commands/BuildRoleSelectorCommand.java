@@ -17,12 +17,12 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (event.getMessageContent().equalsIgnoreCase("!buildroleselector")) {
+            // Command is restricted to the bot owner.
             if (!event.getMessageAuthor().isBotOwner()) {
-                event.getChannel().sendMessage("Comando restringido.");
                 return;
             }
 
-            logger.info("Received command component instruction");
+            logger.info("Received command for buildroleselector instruction");
 
             EmbedBuilder embed = new EmbedBuilder()
                     .setTitle("Elige tu destino")
@@ -31,7 +31,7 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
                                             
                             :printer: <@&968318880927850566>: Miembros del abismo de las traducciones, las leyendas cuentan que estos seres apenas ven la luz del d\u00EDa y que carecen de un alma propia.
                             :books: <@&968318841430085772>: Entidades formidables con un inmenso conocimiento, miembros de la cumbre. Se cree que es gracias a estos que las entidades del abismo de las traducciones obtienen su poder.
-                            <:dex:1003474388315803710> **Neutral:** Merodeadores que eligeron no apoyar a ninguna facci\u00F3n. Posiblemente sean aquellos quienes traigan paz a la guerra.
+                            <:dex:1003474388315803710> **Neutral:** Merodeadores que eligieron no apoyar a ninguna facci\u00F3n. Posiblemente sean aquellos quienes traigan paz a la guerra.
                                             
                             \u00BFCu\u00E1l camino deseas seguir?"""))
                     .setFooter(

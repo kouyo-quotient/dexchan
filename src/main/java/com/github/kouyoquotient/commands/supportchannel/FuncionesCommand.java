@@ -7,18 +7,19 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
 import static com.github.kouyoquotient.Main.logger;
+import static com.github.kouyoquotient.utils.Constants.SUPPORT_CHANNEL;
 
 public class FuncionesCommand implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        long supportChannel = 864252859296907294L;
-
-        if (event.getChannel().getId() != supportChannel) {
-            return;
-        }
 
         if (event.getMessageContent().equalsIgnoreCase("!funciones")) {
-            logger.info("Received funciones command instruction");
+            // Command is restricted to the support channel
+            if (event.getChannel().getId() != SUPPORT_CHANNEL) {
+                return;
+            }
+
+            logger.info("Received instruction for command funciones");
             long authorId = event.getMessageAuthor().getId();
 
             AllowedMentions allowedMentions = new AllowedMentionsBuilder()
@@ -30,8 +31,9 @@ public class FuncionesCommand implements MessageCreateListener {
             new MessageBuilder()
                     .setAllowedMentions(allowedMentions)
                     .append("> <@" + authorId + ">")
+                    .appendNewLine()
                     .append("""
-                            \nLo que puedes hacer ahora mismo:
+                            Lo que puedes hacer ahora mismo:
                             1. Buscar obras.
                             2. Leer cap\u00EDtulos.
                             3. Subir cap\u00EDtulos.
