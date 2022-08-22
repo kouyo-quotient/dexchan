@@ -12,6 +12,7 @@ import org.javacord.api.listener.message.MessageCreateListener;
 import java.util.ArrayList;
 
 import static com.github.kouyoquotient.Main.logger;
+import static com.github.kouyoquotient.utils.Constants.DISCORD_BG_COLOR;
 
 public class BuildRoleSelectorCommand implements MessageCreateListener {
     @Override
@@ -36,7 +37,8 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
                             \u00BFCu\u00E1l camino deseas seguir?"""))
                     .setFooter(
                             "Los roles de Scanlator y Lector podr\u00E1n recibir pings ocasionales sobre anuncios dependiendo del caso. Si seleccionas el rol de Scanlator se te preguntar\u00E1 por el scan del que formas parte.",
-                            "https://cdn.discordapp.com/attachments/864265368447746098/864274483664388136/84dc32a3-355b-4f6d-865c-c08d0c2ec6c4.png");
+                            "https://cdn.discordapp.com/attachments/864265368447746098/864274483664388136/84dc32a3-355b-4f6d-865c-c08d0c2ec6c4.png")
+                    .setColor(DISCORD_BG_COLOR);
             /*
              * TODO: Search about how the fuck insert emojis into this shit
              */
