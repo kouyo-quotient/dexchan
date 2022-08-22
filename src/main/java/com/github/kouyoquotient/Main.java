@@ -5,6 +5,7 @@ import com.github.kouyoquotient.commands.Poke;
 import com.github.kouyoquotient.commands.supportchannel.DiagnosticoCommand;
 import com.github.kouyoquotient.commands.supportchannel.FeedbackCommand;
 import com.github.kouyoquotient.commands.supportchannel.FuncionesCommand;
+import com.github.kouyoquotient.listeners.AnnouncementsListener;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,9 +30,9 @@ public class Main {
         api.addMessageCreateListener(new BuildRoleSelectorCommand());
 
         // Register Listeners
-        api.addMessageComponentCreateListener(new RoleSelectorListener());
+        api.addSelectMenuChooseListener(new RoleSelectorListener());
+        api.addMessageCreateListener(new AnnouncementsListener());
+
         logger.info("Bot is now running!");
-
-
     }
 }
