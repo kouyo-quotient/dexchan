@@ -43,7 +43,7 @@ public class DiagnosticoCommand implements MessageCreateListener {
                             Probablemente est\u00E9 ocurriendo una de las siguientes cosas:
                             **a.** La cach\u00E9 de tu navegador es muy antigua.
                             **b.** Es culpa de una de tus extensiones.
-                            **c.** Tu navegador es demasiado antiguo/está desactualizado.
+                            **c.** Tu navegador es demasiado antiguo/est\u00E1 desactualizado.
                             **d.** No puedes acceder al sitio de forma segura.
                                                         
                             Primero, prueba en modo incognito.
@@ -52,14 +52,18 @@ public class DiagnosticoCommand implements MessageCreateListener {
                             Si lo anterior no funcion\u00F3, proporciona **todo** lo siguiente:
                             - Entra a <https://www.whatsmybrowser.org/> y comparte el enlace que te dan.
                             - Toma una captura de pantalla de la consola de tu navegador (F12 -> Consola) si est\u00E1s en un PC.
-                            
+                            """)
+                    .send(event.getChannel());
+            new MessageBuilder()
+                    .setAllowedMentions(allowedMentions)
+                    .append("""
                             **__1. Error de certificado (o SSL_CERT...)__**
-                            Tu antivirus (normalmente McAfee) o tu router (a menudo los routers con tecnología TrendMicro y los de Asus) est\u00E1n marcando MangaDex como un sitio peligroso y están intentando quitarte el acceso a el.
-                            
+                            Tu antivirus (normalmente McAfee) o tu router (a menudo los routers con tecnolog\u00EDa TrendMicro y los de Asus) est\u00E1n marcando MangaDex como un sitio peligroso y est\u00E1n intentando quitarte el acceso a el.
+                                                        
                             Tienes dos opciones:
                             **a.** Poner en la lista blanca los dominios `https://mangadex.org/` y `https://*.mangadex.org` en la configuraci\u00F3n de tu antivirus/router.
-                            **b.** No uses McAfee y/o desactiva la seguridad de tu router (que esté bloqueando MangaDex demuestra que son basura).
-                            
+                            **b.** No uses McAfee y/o desactiva la seguridad de tu router (que est\u00E9 bloqueando MangaDex demuestra que son basura).
+                                                        
                             **__2. Dominio no encontrado (o NXDOMAIN, ...)__**
                             Lo m\u00E1s probable es que tu proveedor de internet est\u00E9 mintiendo sobre nuestra direcci\u00F3n IP.
                             Ejecuta el siguiente comando en el CMD o la Terminal de tu PC: `nslookup mangadex.org` y compara la IP con la de <https://dns.google/query?name=mangadex.org>. Si no coinciden, tu proveedor de internet est\u00E1 intentando quitarte el acceso al sitio.
@@ -67,7 +71,7 @@ public class DiagnosticoCommand implements MessageCreateListener {
                             Tendr\u00E1s que:
                             **a.** Cambiar tus DNS (usa los de Google o Cloudflare).
                             **b.** Usar una VPN (Cloudflare Warp y ProtonVPN son excelentes y gratuitos).
-                            
+                                                        
                             **__3. Tiempo de espera agotado / Conexi\u00F3n rechazada__**
                             Ve al paso 2. Si no te funciona prueba con una VPN (ver paso 2).
                             Pueden ser muchas cosas, comparte los resultados de los pasos anteriores aqu\u00ED.""")

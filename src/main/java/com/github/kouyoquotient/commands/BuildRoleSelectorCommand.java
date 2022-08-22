@@ -45,7 +45,7 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
             ArrayList<SelectMenuOption> menuOptions = new ArrayList<>();
             menuOptions.add(SelectMenuOption.create("Scanlator", "one", "Seleccionar rol Scanlator"));
             menuOptions.add(SelectMenuOption.create("Lector", "two", "Seleccionar rol Lector"));
-            menuOptions.add(SelectMenuOption.create("Neutral", "three", "Seleccionar rol Neutral"));
+            menuOptions.add(SelectMenuOption.create("Neutral", "three", "Esta opci\u00F3n remover\u00E1 tus roles"));
 
             new MessageBuilder()
                     .addEmbed(embed)
