@@ -5,7 +5,7 @@ import com.github.kouyoquotient.commands.Poke;
 import com.github.kouyoquotient.commands.supportchannel.DiagnosticoCommand;
 import com.github.kouyoquotient.commands.supportchannel.FeedbackCommand;
 import com.github.kouyoquotient.commands.supportchannel.FuncionesCommand;
-import com.github.kouyoquotient.listeners.AnnouncementsListener;
+import com.github.kouyoquotient.commands.supportchannel.HelpCommand;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +14,7 @@ import org.javacord.api.DiscordApiBuilder;
 
 public class Main {
     public static final Logger logger = LogManager.getRootLogger();
-    static String token = System.getenv("TOKEN");
+    static final String token = System.getenv("TOKEN");
 
     public static void main(String[] args) {
         DiscordApi api = new DiscordApiBuilder()
@@ -23,6 +23,7 @@ public class Main {
                 .join();
 
         // Register commands
+        api.addMessageCreateListener(new HelpCommand());
         api.addMessageCreateListener(new FuncionesCommand());
         api.addMessageCreateListener(new FeedbackCommand());
         api.addMessageCreateListener(new DiagnosticoCommand());
@@ -31,7 +32,7 @@ public class Main {
 
         // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
-        api.addMessageCreateListener(new AnnouncementsListener());
+//        api.addMessageCreateListener(new AnnouncementsListener());
 
         logger.info("Bot is now running!");
     }
