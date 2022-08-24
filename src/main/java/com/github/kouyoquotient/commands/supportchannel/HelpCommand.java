@@ -38,6 +38,7 @@ public class HelpCommand implements MessageCreateListener {
                             > **!diagnostico**: Tabla de diagn\u00F3stico sobre problemas de acceso al sitio.
                             > **!feedback**: Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias.
                             > **!funciones**: Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio.
+                            > **!isrgx1**: Instrucciones sobre problemas con certificados al acceder al sitio.
                             
                             Si ning\u00FAn comando te fue de ayuda, considera consultar con un moderador.
                             """)
