@@ -11,9 +11,10 @@ import org.javacord.api.DiscordApiBuilder;
 
 public class Main {
     public static final Logger logger = LogManager.getRootLogger();
-    static final String token = System.getenv("TOKEN");
 
     public static void main(String[] args) {
+        final String token = args[0];
+
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(token)
                 .login()
