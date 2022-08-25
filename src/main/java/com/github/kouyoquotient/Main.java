@@ -3,6 +3,7 @@ package com.github.kouyoquotient;
 import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
 import com.github.kouyoquotient.commands.Poke;
 import com.github.kouyoquotient.commands.supportchannel.*;
+import com.github.kouyoquotient.listeners.AnnouncementsListener;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,10 @@ public class Main {
 
         // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
+
+        /*
+         * Do not enable the announcements' listener, it hasn't been properly tested
+         */
 //        api.addMessageCreateListener(new AnnouncementsListener());
 
         logger.info("Bot is now running!");
