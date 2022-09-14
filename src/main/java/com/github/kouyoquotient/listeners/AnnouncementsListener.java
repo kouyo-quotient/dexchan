@@ -1,35 +1,46 @@
 package com.github.kouyoquotient.listeners;
 
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.Icon;
 import org.javacord.api.entity.message.MessageAttachment;
-import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.WebhookMessageBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
+import org.javacord.api.entity.webhook.IncomingWebhook;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import static com.github.kouyoquotient.Main.logger;
+import static com.github.kouyoquotient.utils.Constants.WEBHOOK_URL;
 import static com.github.kouyoquotient.utils.Constants.announceReceiveChannel;
-import static com.github.kouyoquotient.utils.Constants.announceSendChannel;
 
 public class AnnouncementsListener implements MessageCreateListener {
 
     /*
-     * Is not recommended to use this in any server yet,
-     * it hasn't been properly tested
+     * WARNING:
+     * I strongly recommend not enabling the announcements' listener,
+     * it's functionally WILL BE awful since it lacks proper testing.
      */
+
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        DiscordApi api = event.getApi();
-        List<MessageAttachment> msgAttach = event.getMessageAttachments();
-        String announceMSG = event.getMessageContent();
-        String cutAnnounceMSG1 = announceMSG.substring(0, Math.min(1930, announceMSG.length()));
-        String cutAnnounceMSG2 = announceMSG.substring(cutAnnounceMSG1.length(), Math.min(2000, announceMSG.length()));
-
         if (event.getChannel().getId() != announceReceiveChannel) {
             return;
         }
+
+        DiscordApi api = event.getApi();
+        List<MessageAttachment> getAttachments = event.getMessageAttachments();
+
+        String announceMSG = event.getMessageContent();
+        CompletableFuture<IncomingWebhook> webhook = api.getIncomingWebhookByUrl(WEBHOOK_URL);
+
+
         if (event.getMessageAuthor().isBotUser()) {
             return;
         }
@@ -40,44 +51,33 @@ public class AnnouncementsListener implements MessageCreateListener {
                 .setMentionEveryoneAndHere(false)
                 .build();
 
-        if (!cutAnnounceMSG1.isEmpty()) {
-            if (msgAttach.listIterator().hasNext()) {
-                new MessageBuilder()
-                        .setAllowedMentions(allowedMentions)
-                        .append(cutAnnounceMSG1)
-                        .addAttachment(msgAttach.listIterator().next().getUrl())
-                        .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
-                new MessageBuilder()
-                        .setAllowedMentions(allowedMentions)
-                        .append(cutAnnounceMSG2)
-                        .addAttachment(msgAttach.listIterator().next().getUrl())
-                        .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
+        if (getAttachments.listIterator().hasNext()) {
+            BufferedImage fileAttachment;
+            try {
+                fileAttachment = getAttachments.listIterator().next().downloadAsImage().get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
             }
-            new MessageBuilder()
+
+            new WebhookMessageBuilder()
                     .setAllowedMentions(allowedMentions)
-                    .append("> Anuncio reenviado desde: **MangaDex Announcements #announcements**")
-                    .appendNewLine()
-                    .append("\n" + cutAnnounceMSG1)
-                    .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
-            new MessageBuilder()
-                    .setAllowedMentions(allowedMentions)
-                    .appendNewLine()
-                    .append(cutAnnounceMSG2)
-                    .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
+                    .setDisplayAvatar(event.getMessageAuthor().getAvatar())
+                    .setDisplayName(event.getMessageAuthor().getDisplayName())
+                    .addEmbed(new EmbedBuilder()
+                            .setDescription(announceMSG))
+                    .addAttachment((Icon) fileAttachment)
+                    .send(webhook.join());
+            logger.info("Called case 1");
+            return;
         }
 
-        if (msgAttach.listIterator().hasNext()) {
-            new MessageBuilder()
-                    .setAllowedMentions(allowedMentions)
-                    .append(announceMSG)
-                    .addAttachment(msgAttach.listIterator().next().getUrl())
-                    .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
-        }
-        new MessageBuilder()
+        new WebhookMessageBuilder()
                 .setAllowedMentions(allowedMentions)
-                .append("> Anuncio reenviado desde: **MangaDex Announcements #announcements**")
-                .appendNewLine()
-                .append("\n" + announceMSG)
-                .send(api.getChannelById(announceSendChannel).orElseThrow().asTextChannel().orElseThrow());
+                .setDisplayAvatar(event.getMessageAuthor().getAvatar())
+                .setDisplayName(event.getMessageAuthor().getDisplayName())
+                .addEmbed(new EmbedBuilder()
+                        .setDescription(announceMSG))
+                .send(webhook.join());
+        logger.info("Called case 2");
     }
 }
