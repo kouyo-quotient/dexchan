@@ -5,6 +5,7 @@ import com.github.kouyoquotient.commands.Poke;
 import com.github.kouyoquotient.commands.supportchannel.*;
 import com.github.kouyoquotient.listeners.AnnouncementsListener;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
+import com.github.kouyoquotient.listeners.UserJoinListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
@@ -38,6 +39,7 @@ public class Main {
 
         // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
+        api.addServerMemberJoinListener(new UserJoinListener());
         /*
          * WARNING:
          * I strongly recommend not enabling the announcements' listener,
