@@ -4,3 +4,4 @@ build
 src/test
 /gradle/wrapper/gradle-wrapper.jar
 /gradle/wrapper/gradle-wrapper.properties
+/src/main/java/com/github/kouyoquotient/utils/Constants.java
