@@ -17,8 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.kouyoquotient.Main.logger;
-import static com.github.kouyoquotient.utils.Constants.WEBHOOK_URL;
-import static com.github.kouyoquotient.utils.Constants.announceReceiveChannel;
+import static com.github.kouyoquotient.utils.Constants.*;
 
 public class AnnouncementsListener implements MessageCreateListener {
 
@@ -38,7 +37,7 @@ public class AnnouncementsListener implements MessageCreateListener {
         List<MessageAttachment> getAttachments = event.getMessageAttachments();
 
         String announceMSG = event.getMessageContent();
-        CompletableFuture<IncomingWebhook> webhook = api.getIncomingWebhookByUrl(WEBHOOK_URL);
+        CompletableFuture<IncomingWebhook> webhook = api.getIncomingWebhookByUrl(ANNOUNCEMENT_WEBHOOK_URL);
 
 
         if (event.getMessageAuthor().isBotUser()) {
