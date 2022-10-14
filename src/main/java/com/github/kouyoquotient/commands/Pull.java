@@ -26,7 +26,7 @@ public class Pull implements MessageCreateListener {
                 return;
             }
 
-            logger.info("Received push command instruction");
+            logger.info("Received pull command instruction");
 
             Unirest.config().defaultBaseUrl("https://api.mangadex.org");
             HttpResponse<String> httpResponse = Unirest.get(

@@ -1,11 +1,8 @@
 package com.github.kouyoquotient;
 
-import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
-import com.github.kouyoquotient.commands.Poke;
+import com.github.kouyoquotient.commands.*;
 import com.github.kouyoquotient.commands.supportchannel.*;
-import com.github.kouyoquotient.listeners.AnnouncementsListener;
-import com.github.kouyoquotient.listeners.RoleSelectorListener;
-import com.github.kouyoquotient.listeners.UserJoinListener;
+import com.github.kouyoquotient.listeners.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
@@ -35,7 +32,7 @@ public class Main {
         api.addMessageCreateListener(new DiagnosticoCommand());
         api.addMessageCreateListener(new Isrgx1Command());
 
-        api.addMessageCreateListener(new Poke());
+        api.addMessageCreateListener(new Pull());
         api.addMessageCreateListener(new BuildRoleSelectorCommand());
 
         // Register Listeners
@@ -51,7 +48,7 @@ public class Main {
         if (Files.exists(pathToJsonFile)) {
             try {
                 logger.info("API response file exits, deleting...");
-                Files.deleteIfExists(pathToJsonFile);
+                Files.delete(pathToJsonFile);
                 logger.info("File deleted.");
             } catch (IOException e) {
                 logger.error(e);
