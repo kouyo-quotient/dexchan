@@ -14,7 +14,11 @@ public class UserJoinListener implements ServerMemberJoinListener {
 
     @Override
     public void onServerMemberJoin(ServerMemberJoinEvent event) {
-        logger.info("Called servermemberjoinevent");
+        if(event.getServer().getId() != CURRENT_SERVER_ID){
+            return;
+        }
+
+        logger.info("Called ServerMemberJoinEvent");
         DiscordApi api = event.getApi();
 
         IncomingWebhook webhook = api.getIncomingWebhookByUrl(JOIN_EVENT_WEBHOOK_URL).join();
@@ -27,9 +31,10 @@ public class UserJoinListener implements ServerMemberJoinListener {
                 .addEmbed(new EmbedBuilder()
                         .setTitle("Nuevo miembro")
                         .setAuthor(event.getUser().getDiscriminatedName(), "", event.getUser().getAvatar())
-                        .setDescription("\u00A1" + event.getUser().getDiscriminatedName() + " es el usuario #" + event.getServer().getMemberCount() + " en el servidor!")
-                        .addInlineField("ID:", String.valueOf(event.getUser().getId()))
-                        .addInlineField("Fecha de llegada:", "<t:" + getTimestamp + ":R>"))
+                        .setDescription("<:joinemoji:1030913139627282472> \u00A1" + event.getUser().getDiscriminatedName() + " es el usuario #" + event.getServer().getMemberCount() + " en el servidor!")
+                        .addInlineField("<:id:1030914893643268157> ID:", String.valueOf(event.getUser().getId()))
+                        .addInlineField("<:clock:1030915302323650590> Fecha de llegada:", "<t:" + getTimestamp + ":R>")
+                        .setColor(USER_JOIN_COLOR))
                 .send(webhook);
     }
 }
