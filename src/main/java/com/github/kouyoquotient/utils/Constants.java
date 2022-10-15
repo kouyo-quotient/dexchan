@@ -8,6 +8,7 @@ public final class Constants {
     public static final long SUPPORT_CHANNEL = 0L;
     public static final String JOIN_EVENT_WEBHOOK_URL = "";
     public static final String ANNOUNCEMENT_WEBHOOK_URL = "";
+    public static final long announceReceiveChannel = 0;
     public static final long SCANLATOR_ROLE = 0L;
     public static final long LECTOR_ROLE = 0L;
     public static final long SCANLATOR_EMOJI_ID = 0L;
