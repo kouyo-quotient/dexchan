@@ -9,6 +9,8 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,13 +57,14 @@ public class Pull implements MessageCreateListener {
             try {
                 Files.write(pathToJsonFile, niceJson.getBytes());
                 logger.info("File successfully written.");
-                JSONRead jsonRead = gson.fromJson(niceJson,JSONRead.class);
+                JSONRead jsonRead = gson.fromJson(niceJson, JSONRead.class);
                 ArrayList<Object> arrayList = jsonRead.getData();
-                /*
-                 * TODO:
-                 *  Find a way to print only the chapter id.
-                 */
-                event.getChannel().sendMessage(pathToJsonFile.toFile());
+                JSONArray objects = new JSONArray(arrayList);
+                for (int i = 0; i < objects.length(); i++) {
+                    JSONObject jsonObject = objects.getJSONObject(i);
+                    String value = jsonObject.optString("id");
+                    event.getChannel().sendMessage("https://mangadex.org/chapter/" + value);
+                }
             } catch (IOException e) {
                 logger.error(e);
             }
