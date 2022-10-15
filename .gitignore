@@ -2,4 +2,3 @@
 .gradle
 build
 src/test
-/src/main/java/com/github/kouyoquotient/utils/Constants.java
