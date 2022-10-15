@@ -8,7 +8,7 @@ import org.javacord.api.event.server.member.ServerMemberJoinEvent;
 import org.javacord.api.listener.server.member.ServerMemberJoinListener;
 
 import static com.github.kouyoquotient.Main.logger;
-import static com.github.kouyoquotient.utils.Constants.WEBHOOK_URL;
+import static com.github.kouyoquotient.utils.Constants.*;
 
 public class UserJoinListener implements ServerMemberJoinListener {
 
@@ -17,7 +17,7 @@ public class UserJoinListener implements ServerMemberJoinListener {
         logger.info("Called servermemberjoinevent");
         DiscordApi api = event.getApi();
 
-        IncomingWebhook webhook = api.getIncomingWebhookByUrl(WEBHOOK_URL).join();
+        IncomingWebhook webhook = api.getIncomingWebhookByUrl(JOIN_EVENT_WEBHOOK_URL).join();
 
         long getTimestamp = event.getUser().getJoinedAtTimestamp(event.getServer()).orElseThrow().getEpochSecond();
 
