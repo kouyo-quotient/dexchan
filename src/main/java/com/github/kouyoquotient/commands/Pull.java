@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.github.kouyoquotient.Main.jedis;
 import static com.github.kouyoquotient.Main.logger;
@@ -56,33 +57,63 @@ public class Pull implements MessageCreateListener {
 
             logger.info("Writing API response to file...");
             try {
-                JSONObject jsonObject;
-                String latestChapter, value = "";
-
                 Files.write(pathToJsonFile, niceJson.getBytes());
                 logger.info("File successfully written.");
+
+                String value;
+                int latestChapterIndex = 0;
 
                 JSONRead jsonRead = gson.fromJson(niceJson, JSONRead.class);
                 ArrayList<Object> arrayList = jsonRead.getData();
                 JSONArray objects = new JSONArray(arrayList);
 
+//                if (jedis.llen("chapterID") == 32) {
+//                    event.getChannel().sendMessage("List contains 32 elements");
+//                    int j = 0;
+//                    while (j < jedis.llen("chapterID")) {
+//                        if (Objects.equals(jedis.lindex("chapterID", j), jedis.get("lastChapter"))) {
+//                            return;
+//                        }
+//                        jedis.lset("chapterID", j, "DELETED");
+//                        jedis.lrem("chapterID", j, "DELETED");
+//                        j++;
+//                    }
+//                    latestChapter = jedis.lindex("chapterID", j + 1);
+//                    latestChapterIndex = j + 1;
+//                    event.getChannel().sendMessage("Set latestChapter as" + latestChapter + " and latestChapterIndex as" + latestChapterIndex);
+//                }
+
                 if (jedis.llen("chapterID") == 0) {
-                    jedis.rpush("chapterID", "");
+                    event.getChannel().sendMessage("Writing...");
+                    jedis.lpush("chapterID", "");
                     for (int i = 0; i < objects.length(); i++) {
-                        jsonObject = objects.getJSONObject(i);
+                        JSONObject jsonObject = objects.getJSONObject(i);
                         value = jsonObject.optString("id");
-                        jedis.rpush("chapterID", value);
+                        jedis.lpush("chapterID", value);
                     }
+                    jedis.lrem("chapterID", 0, "");
                     event.getChannel().sendMessage("Successfully written IDs to redis");
                 }
 
-                latestChapter = value;
-
-                for (int j = 0; j < jedis.llen("chapterID"); j++) {
-                    if (jedis.lindex("chapterID", j).contentEquals(latestChapter)) {
-                        event.getChannel().sendMessage("Found " + latestChapter + " on index " + j);
+                event.getChannel().sendMessage("Now looking for index for " + jedis.lindex("chapterID", 31));
+                for (int i = 0; i < jedis.llen("chapterID"); i++) {
+                    if (Objects.equals(jedis.lindex("chapterID", i), jedis.lindex("chapterID", 31))) {
+                        event.getChannel().sendMessage("Found " + jedis.lindex("chapterID", 31) + " on index " + i);
+                        return;
                     }
+                    latestChapterIndex = i;
                 }
+
+                /*
+                 * TODO:
+                 *  For some reason jedis doesn't set the keys and values from below,
+                 *  I don't see what I'm doing wrong, so I'll leave it for later
+                 */
+                jedis.set("lastChapter", jedis.lindex("chapterID", 31));
+                jedis.set("lastChapterIndex", String.valueOf(latestChapterIndex));
+                event.getChannel().sendMessage("Set lastChapter as "+ jedis.get("lastChapter"));
+                event.getChannel().sendMessage("Set lastChapterIndex as "+ jedis.get("lastChapterIndex"));
+
             } catch (IOException e) {
                 logger.error(e);
             }
