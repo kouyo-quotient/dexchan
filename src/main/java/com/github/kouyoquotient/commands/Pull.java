@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import static com.github.kouyoquotient.Main.jedis;
 import static com.github.kouyoquotient.Main.logger;
 
 public class Pull implements MessageCreateListener {
@@ -55,15 +56,32 @@ public class Pull implements MessageCreateListener {
 
             logger.info("Writing API response to file...");
             try {
+                JSONObject jsonObject;
+                String latestChapter, value = "";
+
                 Files.write(pathToJsonFile, niceJson.getBytes());
                 logger.info("File successfully written.");
+
                 JSONRead jsonRead = gson.fromJson(niceJson, JSONRead.class);
                 ArrayList<Object> arrayList = jsonRead.getData();
                 JSONArray objects = new JSONArray(arrayList);
-                for (int i = 0; i < objects.length(); i++) {
-                    JSONObject jsonObject = objects.getJSONObject(i);
-                    String value = jsonObject.optString("id");
-                    event.getChannel().sendMessage("https://mangadex.org/chapter/" + value);
+
+                if (jedis.llen("chapterID") == 0) {
+                    jedis.rpush("chapterID", "");
+                    for (int i = 0; i < objects.length(); i++) {
+                        jsonObject = objects.getJSONObject(i);
+                        value = jsonObject.optString("id");
+                        jedis.rpush("chapterID", value);
+                    }
+                    event.getChannel().sendMessage("Successfully written IDs to redis");
+                }
+
+                latestChapter = value;
+
+                for (int j = 0; j < jedis.llen("chapterID"); j++) {
+                    if (jedis.lindex("chapterID", j).contentEquals(latestChapter)) {
+                        event.getChannel().sendMessage("Found " + latestChapter + " on index " + j);
+                    }
                 }
             } catch (IOException e) {
                 logger.error(e);
