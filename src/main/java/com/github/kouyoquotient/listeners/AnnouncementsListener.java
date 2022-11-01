@@ -53,7 +53,7 @@ public class AnnouncementsListener implements MessageCreateListener {
         if (getAttachments.listIterator().hasNext()) {
             BufferedImage fileAttachment;
             try {
-                fileAttachment = getAttachments.listIterator().next().downloadAsImage().get();
+                fileAttachment = getAttachments.listIterator().next().asImage().get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
