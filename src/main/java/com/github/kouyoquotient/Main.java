@@ -1,6 +1,7 @@
 package com.github.kouyoquotient;
 
 import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
+import com.github.kouyoquotient.commands.PingCommand;
 import com.github.kouyoquotient.commands.Pull;
 import com.github.kouyoquotient.commands.supportchannel.*;
 import com.github.kouyoquotient.listeners.RoleSelectorListener;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.interaction.SlashCommand;
 import redis.clients.jedis.JedisPooled;
 
 import java.io.IOException;
@@ -37,6 +39,9 @@ public class Main {
 
         api.addMessageCreateListener(new Pull());
         api.addMessageCreateListener(new BuildRoleSelectorCommand());
+
+        SlashCommand.with("ping", "Test command").createGlobal(api).join();
+        api.addSlashCommandCreateListener(new PingCommand());
 
         // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
