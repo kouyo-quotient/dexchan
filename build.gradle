@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.kouyo-quotient'
-version '1.2.1'
+version '1.3'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
