@@ -31,17 +31,31 @@ public class Main {
                 .join();
 
         // Register commands
+        SlashCommand.with("help", "Lista completa de comandos de ayuda.").createGlobal(api).join();
         api.addMessageCreateListener(new HelpCommand());
-        api.addMessageCreateListener(new FuncionesCommand());
-        api.addMessageCreateListener(new FeedbackCommand());
-        api.addMessageCreateListener(new DiagnosticoCommand());
-        api.addMessageCreateListener(new Isrgx1Command());
+        api.addSlashCommandCreateListener(new HelpCommand());
 
-        api.addMessageCreateListener(new Pull());
-        api.addMessageCreateListener(new BuildRoleSelectorCommand());
+        SlashCommand.with("funciones", "Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio.").createGlobal(api).join();
+        api.addMessageCreateListener(new FuncionesCommand());
+        api.addSlashCommandCreateListener(new FuncionesCommand());
+
+        SlashCommand.with("feedback", "Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias.").createGlobal(api).join();
+        api.addMessageCreateListener(new FeedbackCommand());
+        api.addSlashCommandCreateListener(new FeedbackCommand());
+
+        SlashCommand.with("diagnostico", "Tabla de diagn\u00F3stico sobre problemas de acceso al sitio").createGlobal(api).join();
+        api.addMessageCreateListener(new DiagnosticoCommand());
+        api.addSlashCommandCreateListener(new DiagnosticoCommand());
+
+        SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio.").createGlobal(api).join();
+        api.addMessageCreateListener(new Isrgx1Command());
+        api.addSlashCommandCreateListener(new Isrgx1Command());
 
         SlashCommand.with("ping", "Test command").createGlobal(api).join();
         api.addSlashCommandCreateListener(new PingCommand());
+
+        api.addMessageCreateListener(new Pull());
+        api.addMessageCreateListener(new BuildRoleSelectorCommand());
 
         // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
