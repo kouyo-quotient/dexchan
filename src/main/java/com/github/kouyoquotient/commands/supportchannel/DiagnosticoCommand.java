@@ -10,6 +10,7 @@ import org.javacord.api.listener.message.MessageCreateListener;
 
 import static com.github.kouyoquotient.Main.logger;
 import static com.github.kouyoquotient.utils.Constants.SUPPORT_CHANNEL;
+import static org.javacord.api.entity.message.MessageFlag.EPHEMERAL;
 
 public class DiagnosticoCommand implements MessageCreateListener, SlashCommandCreateListener {
 
@@ -70,12 +71,14 @@ public class DiagnosticoCommand implements MessageCreateListener, SlashCommandCr
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (event.getMessageContent().equalsIgnoreCase("!diagnostico")) {
+            logger.info("Received legacy command diagnostico");
+
             // Command is restricted to the support channel
             if (event.getChannel().getId() != SUPPORT_CHANNEL) {
+                event.getMessageAuthor().getMessage().reply("No puedes usar ese comando aqu\u00ED, pero puedes probar usando el comando de barra diagonal. \n`/diagnostico`");
+                logger.info("Invoker not in support channel, exiting");
                 return;
             }
-
-            logger.info("Received instruction for command diagnostico");
 
             event.getChannel().sendMessage(messageFirst);
             event.getChannel().sendMessage(messageFinal);
@@ -84,12 +87,17 @@ public class DiagnosticoCommand implements MessageCreateListener, SlashCommandCr
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
-        // Command is restricted to the support channel
-        if (event.getInteraction().getChannel().orElseThrow().getId() != SUPPORT_CHANNEL) {
-            return;
-        }
-
         if (event.getSlashCommandInteraction().getFullCommandName().equalsIgnoreCase("diagnostico")) {
+            logger.info("Received SlashCommand diagnostico");
+
+            // Send as ephemeral if not in support channel
+            if (event.getInteraction().getChannel().orElseThrow().getId() != SUPPORT_CHANNEL) {
+                logger.info("Running instructions for not-in-support-channel");
+                event.getInteraction().createImmediateResponder().setContent(messageFirst).setFlags(EPHEMERAL).respond();
+                event.getInteraction().createFollowupMessageBuilder().setContent(messageFinal).setFlags(EPHEMERAL).send();
+                return;
+            }
+
             event.getInteraction().createImmediateResponder().setContent(messageFirst).respond();
             event.getInteraction().createFollowupMessageBuilder().setContent(messageFinal).send();
         }

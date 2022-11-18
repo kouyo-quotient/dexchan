@@ -10,6 +10,7 @@ import org.javacord.api.listener.message.MessageCreateListener;
 
 import static com.github.kouyoquotient.Main.logger;
 import static com.github.kouyoquotient.utils.Constants.SUPPORT_CHANNEL;
+import static org.javacord.api.entity.message.MessageFlag.EPHEMERAL;
 
 public class FuncionesCommand implements MessageCreateListener, SlashCommandCreateListener {
 
@@ -47,24 +48,31 @@ public class FuncionesCommand implements MessageCreateListener, SlashCommandCrea
     public void onMessageCreate(MessageCreateEvent event) {
 
         if (event.getMessageContent().equalsIgnoreCase("!funciones")) {
+            logger.info("Received legacy command funciones");
+
             // Command is restricted to the support channel
             if (event.getChannel().getId() != SUPPORT_CHANNEL) {
+                event.getMessageAuthor().getMessage().reply("No puedes usar ese comando aqu\u00ED, pero puedes probar usando el comando de barra diagonal. \n`/funciones`");
+                logger.info("Invoker not in support channel, exiting");
                 return;
             }
 
-            logger.info("Received instruction for command funciones");
             event.getChannel().sendMessage(message);
         }
     }
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
-        // Command is restricted to the support channel
-        if (event.getInteraction().getChannel().orElseThrow().getId() != SUPPORT_CHANNEL) {
-            return;
-        }
-
         if (event.getSlashCommandInteraction().getFullCommandName().equalsIgnoreCase("funciones")) {
+            logger.info("Received SlashCommand funciones");
+
+            // Send as ephemeral if not in support channel
+            if (event.getInteraction().getChannel().orElseThrow().getId() != SUPPORT_CHANNEL) {
+                logger.info("Running instructions for not-in-support-channel");
+                event.getInteraction().createImmediateResponder().setFlags(EPHEMERAL).setContent(message).respond();
+                return;
+            }
+
             event.getInteraction().createImmediateResponder().setContent(message).respond();
         }
     }
