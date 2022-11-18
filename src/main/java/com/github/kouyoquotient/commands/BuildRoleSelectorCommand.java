@@ -57,12 +57,11 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
                     .addEmbed(embed)
                     .addComponents(
                             ActionRow.of(
-                                    SelectMenu.create
-                                            ("options",
-                                                    "Click aqu\u00ED para seleccionar tu facci\u00F3n",
-                                                    1,
-                                                    1,
-                                                    selectMenuOptions)))
+                                    SelectMenu.createStringMenu("options",
+                                            "Click aqu\u00ED para seleccionar tu facci\u00F3n",
+                                            1,
+                                            1,
+                                            selectMenuOptions)))
                     .send(event.getChannel());
             event.getMessage().delete();
 
