@@ -11,8 +11,6 @@ public final class Constants {
     public static final String ANNOUNCEMENT_WEBHOOK_URL = "";
     public static final long SCANLATOR_ROLE = 0L;
     public static final long LECTOR_ROLE = 0L;
-    public static final long SCANLATOR_EMOJI_ID = 0L;
-    public static final long LECTOR_EMOJI_ID = 0L;
     public static final long NEUTRAL_EMOJI_ID = 0L;
     public static final Color DISCORD_BG_COLOR = new Color(56, 57, 61);
     public static final Color USER_JOIN_COLOR = new Color(58, 145, 90);
