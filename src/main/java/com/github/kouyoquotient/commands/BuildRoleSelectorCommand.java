@@ -13,12 +13,12 @@ import org.javacord.api.listener.message.MessageCreateListener;
 import java.util.ArrayList;
 
 import static com.github.kouyoquotient.Main.logger;
-import static com.github.kouyoquotient.utils.Constants.*;
 
 public class BuildRoleSelectorCommand implements MessageCreateListener {
+
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        if (event.getMessageContent().equalsIgnoreCase("!buildroleselector")) {
+        if (event.getMessageContent().equalsIgnoreCase("!birl")) {
             DiscordApi api = event.getApi();
             // Command is restricted to the bot owner.
             if (!event.getMessageAuthor().isBotOwner()) {
@@ -29,33 +29,33 @@ public class BuildRoleSelectorCommand implements MessageCreateListener {
 
             EmbedBuilder embed = new EmbedBuilder()
                     .setTitle("Elige tu destino")
-                    .setDescription(EmojiParser.parseToUnicode("""
-                            En esta tierra no tan inh\u00F3spita pero vasta; hay incontables senderos por los que se pueden recorrer, esto ha llevado a que tres facciones sean creadas:
-                                            
-                            :writing_hand: <@&968318880927850566>: Miembros del abismo de las traducciones, las leyendas cuentan que estos seres apenas ven la luz del d\u00EDa y que carecen de un alma propia.
-                            :books: <@&968318841430085772>: Entidades formidables con un inmenso conocimiento, miembros de la cumbre. Se cree que es gracias a estos que las entidades del abismo de las traducciones obtienen su poder.
-                            <:neutral:1003474388315803710> **Neutral:** Merodeadores que eligieron no apoyar a ninguna facci\u00F3n. Posiblemente sean aquellos quienes traigan paz a la guerra.
-                                            
-                            \u00BFCu\u00E1l camino deseas seguir?"""))
-                    .setFooter(
-                            "Los roles de Scanlator y Lector podr\u00E1n recibir pings ocasionales sobre anuncios dependiendo del caso. Si seleccionas el rol de Scanlator se te preguntar\u00E1 por el scan del que formas parte.",
-                            "https://cdn.discordapp.com/attachments/864265368447746098/864274483664388136/84dc32a3-355b-4f6d-865c-c08d0c2ec6c4.png")
-                    .setColor(DISCORD_BG_COLOR);
+                    .setDescription(
+                            EmojiParser.parseToUnicode(
+                                    """
+                                            En nuestra versi\u00F3n del mundo existe una facci\u00F3n en una constante guerra de caos y destrucci\u00F3n contra un enemigo com\u00FAn. Los miembros de esta facci\u00F3n son...
+                                                            
+                                            :writing_hand: <@&968318880927850566>: Criaturas del abismo de las traducciones. Todos son venerados por sus subordinados y seguidores debido a que son capaces de entender lenguajes at\u00E1vicos.
+                                            :books: <@&968318841430085772>: Son conocidos en el abismo de las traducciones por fungir como catalizador y poseer vastos conocimientos de los manuscritos de [    ].
+                                            <:neutral:1003474388315803710> **Neutral:** Seres sin ning\u00FAn tipo de poder especial. Veneran a las criaturas del abismo de las traducciones.
+                                                            
+                                            \u00BFParticipar\u00E1s en esta guerra?
+                                            """))
+                    .setFooter("", "https://cdn.discordapp.com/attachments/864265368447746098/864274483664388136/84dc32a3-355b-4f6d-865c-c08d0c2ec6c4.png");
+//                    .setColor(DISCORD_BG_COLOR);
 
-            ArrayList<SelectMenuOption> selectMenuOptions = new ArrayList<>();
-            selectMenuOptions.add(SelectMenuOption.create("Scanlator", "one", "Seleccionar rol Scanlator", EmojiParser.parseToUnicode(":writing_hand:")));
-            selectMenuOptions.add(SelectMenuOption.create("Lector", "two", "Seleccionar rol Lector", EmojiParser.parseToUnicode(":books:")));
-            // You can't add custom emojis, so I'll leave this one like this in the meantime.
-            selectMenuOptions.add(SelectMenuOption.create("Neutral", "three", "Esta opci\u00F3n remover\u00E1 tus roles", api.getKnownCustomEmojiOrCreateCustomEmoji(NEUTRAL_EMOJI_ID, "neutral", false)));
+            ArrayList<SelectMenuOption> iSelectMenuOptions = new ArrayList<>();
+            iSelectMenuOptions.add(SelectMenuOption.create("Scanlator", "scanlator", "Seleccionar rol Scanlator", EmojiParser.parseToUnicode(":writing_hand:")));
+            iSelectMenuOptions.add(SelectMenuOption.create("Lector", "lector", "Seleccionar rol Lector", EmojiParser.parseToUnicode(":books:")));
+            // You can't add custom emojis like above, so I'll leave this one like this for now.
+            iSelectMenuOptions.add(SelectMenuOption.create("Neutral", "neutral", "Esta opci\u00F3n remover\u00E1 tus roles seleccionados", api.getKnownCustomEmojiOrCreateCustomEmoji(1003474388315803710L, "neutral", false)));
 
             new MessageBuilder()
                     .addEmbed(embed)
-                    .addComponents(
-                            ActionRow.of(
-                                    SelectMenu.createStringMenu(
-                                            "roleselector",
-                                            "Click aqu\u00ED para seleccionar tus roles",
-                                            selectMenuOptions)))
+                    .addComponents(ActionRow.of(
+                            SelectMenu.createStringMenu(
+                                    "iroleselector",
+                                    "Click aqu\u00ED para seleccionar tu rol",
+                                    iSelectMenuOptions)))
                     .send(event.getChannel());
             event.getMessage().delete();
 
