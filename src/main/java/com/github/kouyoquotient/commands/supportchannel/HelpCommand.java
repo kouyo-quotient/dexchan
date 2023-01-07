@@ -26,10 +26,11 @@ public class HelpCommand implements MessageCreateListener, SlashCommandCreateLis
                     .append("""
                             Si necesitas ayuda, prueba revisando estos comandos:
                                                         
-                            > **!diagnostico**: Tabla de diagn\u00F3stico sobre problemas de acceso al sitio.
-                            > **!feedback**: Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias.
-                            > **!funciones**: Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio.
-                            > **!isrgx1**: Instrucciones sobre problemas con certificados al acceder al sitio.
+                            > **/diagnostico**: Tabla de diagn\u00F3stico sobre problemas de acceso al sitio.
+                            > **/feedback**: Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias para el sitio.
+                            > **/funciones**: Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio.
+                            > **/isrgx1**: Instrucciones sobre problemas con certificados al acceder al sitio.
+                            > **/aprobacion**: Informaci\u00F3n sobre la aprobaci\u00F3n de cap\u00EDtulos.
                                                         
                             Si ning\u00FAn comando te fue de ayuda, considera consultar con un moderador.
                             """)

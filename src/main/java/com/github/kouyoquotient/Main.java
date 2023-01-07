@@ -31,15 +31,15 @@ public class Main {
                 .join();
 
         // Register commands
-        SlashCommand.with("help", "Lista completa de comandos de ayuda.").createGlobal(api).join();
+        SlashCommand.with("help", "Lista completa de comandos de ayuda").createGlobal(api).join();
         api.addMessageCreateListener(new HelpCommand());
         api.addSlashCommandCreateListener(new HelpCommand());
 
-        SlashCommand.with("funciones", "Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio.").createGlobal(api).join();
+        SlashCommand.with("funciones", "Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio").createGlobal(api).join();
         api.addMessageCreateListener(new FuncionesCommand());
         api.addSlashCommandCreateListener(new FuncionesCommand());
 
-        SlashCommand.with("feedback", "Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias.").createGlobal(api).join();
+        SlashCommand.with("feedback", "Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias").createGlobal(api).join();
         api.addMessageCreateListener(new FeedbackCommand());
         api.addSlashCommandCreateListener(new FeedbackCommand());
 
@@ -47,9 +47,13 @@ public class Main {
         api.addMessageCreateListener(new DiagnosticoCommand());
         api.addSlashCommandCreateListener(new DiagnosticoCommand());
 
-        SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio.").createGlobal(api).join();
+        SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio").createGlobal(api).join();
         api.addMessageCreateListener(new Isrgx1Command());
         api.addSlashCommandCreateListener(new Isrgx1Command());
+
+        SlashCommand.with("aprobacion", "Informaci\u00F3n sobre la cola de aprobaci\u00F3n de cap\u00EDtulos").createGlobal(api).join();
+        api.addMessageCreateListener(new AprobacionCommand());
+        api.addSlashCommandCreateListener(new AprobacionCommand());
 
         SlashCommand.with("ping", "Test command").createGlobal(api).join();
         api.addSlashCommandCreateListener(new PingCommand());
