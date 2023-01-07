@@ -7,6 +7,8 @@ import org.javacord.api.entity.webhook.IncomingWebhook;
 import org.javacord.api.event.server.member.ServerMemberJoinEvent;
 import org.javacord.api.listener.server.member.ServerMemberJoinListener;
 
+import java.awt.*;
+
 import static com.github.kouyoquotient.Main.logger;
 import static com.github.kouyoquotient.utils.Constants.*;
 
@@ -29,12 +31,13 @@ public class UserJoinListener implements ServerMemberJoinListener {
                 .setDisplayAvatar(api.getYourself().getAvatar())
                 .setDisplayName(api.getYourself().getName())
                 .addEmbed(new EmbedBuilder()
-                        .setTitle("Nuevo miembro")
+                        .setTitle("<:newmember:1061067766616031283> Nuevo miembro")
                         .setAuthor(event.getUser().getDiscriminatedName(), "", event.getUser().getAvatar())
-                        .setDescription("<:joinemoji:1030913139627282472> \u00A1<@" + event.getUser().getId() + "> es el usuario #" + event.getServer().getMemberCount() + " en el servidor!")
+                        .setDescription("<:joinemoji:1030913139627282472> \u00A1Bienvenido <@" + event.getUser().getId() + ">! \n Eres el usuario #" + event.getServer().getMemberCount() + " en el servidor!")
                         .addInlineField("<:id:1030914893643268157> ID:", String.valueOf(event.getUser().getId()))
-                        .addInlineField("<:clock:1030915302323650590> Fecha de llegada:", "<t:" + getTimestamp + ":R>")
-                        .setColor(USER_JOIN_COLOR))
+                        .addInlineField("<:clock:1030915302323650590> Fecha de llegada:", "<t:" + getTimestamp + ":F>")
+                        .setColor(new Color(58, 145, 90)))
                 .send(webhook);
+
     }
 }
