@@ -9,8 +9,7 @@ import org.javacord.api.interaction.SelectMenuInteraction;
 import org.javacord.api.listener.interaction.SelectMenuChooseListener;
 
 import static com.github.kouyoquotient.Main.logger;
-import static com.github.kouyoquotient.utils.Constants.LECTOR_ROLE;
-import static com.github.kouyoquotient.utils.Constants.SCANLATOR_ROLE;
+import static com.github.kouyoquotient.utils.Constants.*;
 
 public class RoleSelectorListener implements SelectMenuChooseListener {
 
@@ -19,22 +18,21 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
         DiscordApi api = event.getApi();
 
         SelectMenuInteraction componentInteraction = (SelectMenuInteraction) event.getInteraction();
-        SelectMenuInteraction menuInteraction = event.getSelectMenuInteraction();
-        String valueId = menuInteraction.getChosenOptions().listIterator().next().getValue();
+        String valueId = componentInteraction.getChosenOptions().listIterator().next().getValue();
         User getUser = event.getInteraction().getUser();
 
         switch (valueId) {
-            case "one" -> {
-                logger.info("Select Menu interaction detected, running instructions for one");
+            case "scanlator" -> {
+                logger.info("SelectMenu interaction detected, running instructions for one");
 
                 /*
                  * Staff is able to manually apply roles to the users,
                  * so here we check if for some reason the user has both Lector and Scanlator role.
                  * If true we notify the user about it
                  */
-                if(api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)){
+                if (api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                     componentInteraction.createImmediateResponder()
-                            .setContent(EmojiParser.parseToUnicode(":warning: **\u00A1Tienes dos roles seleccionados!**\n Eso no deber\u00EDa ser posible, por favor selecciona la opci\u00F3n de remover tus roles o no podr\u00E1s seleccionar ninguna opci\u00F3n usando el men\u00FA."))
+                            .setContent(EmojiParser.parseToUnicode("<:selwarning:1061074946526289982> **\u00A1Tu perfil tiene dos roles establecidos!** <:selwarning:1061074946526289982> \nNo podr\u00E1s usar este men\u00FA si tienes dos roles seleccionados, por favor haz click la opci\u00F3n \"Neutral\", \u00E9sta opci\u00F3n remover\u00E1 tus roles."))
                             .setFlags(MessageFlag.EPHEMERAL).respond();
                     logger.info("Invoker had two roles selected, exiting");
                     return;
@@ -46,7 +44,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                  */
                 if (api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser)) {
                     componentInteraction.createImmediateResponder()
-                            .setContent(EmojiParser.parseToUnicode(":warning: Ya has seleccionado este rol"))
+                            .setContent(EmojiParser.parseToUnicode("<:selwarning:1061074946526289982> \u00A1Ya has seleccionado este rol! <:selwarning:1061074946526289982>"))
                             .setFlags(MessageFlag.EPHEMERAL).respond();
                     logger.info("Invoker had already selected the role, exiting");
                     return;
@@ -64,7 +62,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                             if (!api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && !api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                                 api.getRoleById(SCANLATOR_ROLE).orElseThrow().addUser(getUser).thenAcceptAsync(replyUser -> {
                                     interactionOriginalResponseUpdater
-                                            .setContent(EmojiParser.parseToUnicode(":white_check_mark: Has seleccionado el rol <@&" + SCANLATOR_ROLE + ">."))
+                                            .setContent(EmojiParser.parseToUnicode("<:success:1061077709419204718> Roles establecidos correctamente.\n\u2022 [<@&"+SCANLATOR_ROLE+">]"))
                                             .update();
                                     logger.info("Successfully applied role Scanlator to user with ID: " + getUser.getId());
                                 });
@@ -80,22 +78,22 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                                     .thenRun((Runnable) api.getRoleById(SCANLATOR_ROLE).orElseThrow().addUser(getUser)
                                             .thenAcceptAsync(replyUser -> {
                                                 interactionOriginalResponseUpdater
-                                                        .setContent(EmojiParser.parseToUnicode(":white_check_mark: Has seleccionado el rol <@&" + SCANLATOR_ROLE + ">."))
+                                                        .setContent(EmojiParser.parseToUnicode("<:success:1061077709419204718> Roles establecidos correctamente.\n\u2022 [<@"+SCANLATOR_ROLE+">]"))
                                                         .update();
                                                 logger.info("Successfully applied role Scanlator to user with ID: " + getUser.getId());
                                             }));
                         });
             }
 
-            case "two" -> {
+            case "lector" -> {
                 /*
                  * This case has the same logic as the previous one
                  */
                 logger.info("Select Menu interaction detected, running instructions for two");
 
-                if(api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)){
+                if (api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                     componentInteraction.createImmediateResponder()
-                            .setContent(EmojiParser.parseToUnicode(":warning: **\u00A1Tienes dos roles seleccionados!**\n Eso no deber\u00EDa ser posible, por favor selecciona la opci\u00F3n de remover tus roles o no podr\u00E1s seleccionar ninguna opci\u00F3n usando el men\u00FA."))
+                            .setContent(EmojiParser.parseToUnicode("<:selwarning:1061074946526289982> **\u00A1Tu perfil tiene dos roles establecidos!** <:selwarning:1061074946526289982> \nNo podr\u00E1s usar este men\u00FA si tienes dos roles seleccionados, por favor haz click la opci\u00F3n \"Neutral\", \u00E9sta opci\u00F3n remover\u00E1 tus roles."))
                             .setFlags(MessageFlag.EPHEMERAL).respond();
                     logger.info("Invoker had two roles selected, exiting");
                     return;
@@ -103,7 +101,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
 
                 if (api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                     componentInteraction.createImmediateResponder()
-                            .setContent(EmojiParser.parseToUnicode(":warning: Ya has seleccionado este rol"))
+                            .setContent(EmojiParser.parseToUnicode("<:selwarning:1061074946526289982> \u00A1Ya has seleccionado este rol! <:selwarning:1061074946526289982>"))
                             .setFlags(MessageFlag.EPHEMERAL).respond();
                     logger.info("Invoker had already selected the role, exiting");
                     return;
@@ -116,7 +114,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                             if (!api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && !api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                                 api.getRoleById(LECTOR_ROLE).orElseThrow().addUser(getUser).thenAcceptAsync(replyUser -> {
                                     interactionOriginalResponseUpdater
-                                            .setContent(EmojiParser.parseToUnicode(":white_check_mark: Has seleccionado el rol <@&" + LECTOR_ROLE + ">."))
+                                            .setContent(EmojiParser.parseToUnicode("<:success:1061077709419204718> Roles establecidos correctamente.\n\u2022 [<@&"+LECTOR_ROLE+">]"))
                                             .update();
                                     logger.info("Successfully applied role Lector to user with ID: " + getUser.getId());
                                 });
@@ -127,27 +125,15 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                                     .thenRun((Runnable) api.getRoleById(LECTOR_ROLE).orElseThrow().addUser(getUser)
                                             .thenAcceptAsync(replyUser -> {
                                                 interactionOriginalResponseUpdater
-                                                        .setContent(EmojiParser.parseToUnicode(":white_check_mark: Has seleccionado el rol <@&" + LECTOR_ROLE + ">."))
+                                                        .setContent(EmojiParser.parseToUnicode("<:success:1061077709419204718> Roles establecidos correctamente.\n\u2022 [<@&"+LECTOR_ROLE+">]"))
                                                         .update();
                                                 logger.info("Successfully applied role Lector to user with ID: " + getUser.getId());
                                             }));
                         });
             }
 
-            case "three" -> {
-                logger.info("Select Menu interaction detected, running instructions for three");
-
-                /*
-                 * Here we check if the user doesn't have any role,
-                 * reply with a message notifying the user if true
-                 */
-                if (!api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && !api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
-                    componentInteraction.createImmediateResponder()
-                            .setContent(EmojiParser.parseToUnicode(":warning: No has seleccionado ning\u00FAn rol"))
-                            .setFlags(MessageFlag.EPHEMERAL).respond();
-                    logger.info("Invoker had no roles, exiting");
-                    return;
-                }
+            case "neutral" -> {
+                logger.info("Select Menu interaction detected, running instructions for four");
 
                 componentInteraction
                         .respondLater(true)
@@ -160,7 +146,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                             if (api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser) && !api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser)) {
                                 api.getRoleById(SCANLATOR_ROLE).orElseThrow().removeUser(getUser).thenAcceptAsync(replyUser -> {
                                     interactionOriginalResponseUpdater
-                                            .setContent(EmojiParser.parseToUnicode(":no_entry: Has removido tu rol <@&" + SCANLATOR_ROLE + ">"))
+                                            .setContent(EmojiParser.parseToUnicode("<:remove:1061080329051447409> Roles removidos correctamente. \n\u2022 [<@&"+SCANLATOR_ROLE+">]"))
                                             .update();
                                     logger.info("Successfully removed role Scanlator from user with ID: " + getUser.getId());
                                 });
@@ -173,7 +159,7 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                             if (api.getRoleById(LECTOR_ROLE).orElseThrow().hasUser(getUser) && !api.getRoleById(SCANLATOR_ROLE).orElseThrow().hasUser(getUser)) {
                                 api.getRoleById(LECTOR_ROLE).orElseThrow().removeUser(getUser).thenAcceptAsync(replyUser -> {
                                     interactionOriginalResponseUpdater
-                                            .setContent(EmojiParser.parseToUnicode(":no_entry: Has removido tu rol <@&" + LECTOR_ROLE + ">"))
+                                            .setContent(EmojiParser.parseToUnicode("<:remove:1061080329051447409> Roles removidos correctamente. \n\u2022 [<@&"+LECTOR_ROLE+">]"))
                                             .update();
                                     logger.info("Successfully removed role Lector from user with ID: " + getUser.getId());
                                 });
@@ -189,21 +175,11 @@ public class RoleSelectorListener implements SelectMenuChooseListener {
                                     .thenRun((Runnable) api.getRoleById(LECTOR_ROLE).orElseThrow().removeUser(getUser)
                                             .thenAcceptAsync(replyUser -> {
                                                 interactionOriginalResponseUpdater
-                                                        .setContent(EmojiParser.parseToUnicode("Has removido tus roles <@&"+SCANLATOR_ROLE+"> y <@&"+LECTOR_ROLE+">\n\n :warning: **Esta acci\u00F3n no deber\u00EDa estar ejecut\u00E1ndose. Por favor notificalo mediante el canal de soporte.**"))
+                                                        .setContent(EmojiParser.parseToUnicode("<:remove:1061080329051447409> Roles removidos correctamente. \n\u2022 [<@&"+SCANLATOR_ROLE+">] \n\u2022 [<@&"+LECTOR_ROLE+">]"))
                                                         .update();
                                                 logger.info("Successfully removed all roles for user with ID: " + getUser.getId());
                                             }));
                         });
-            }
-
-            case "options" -> {
-                logger.warn("Select Menu interaction detected, running instructions for fallback reply");
-
-                componentInteraction
-                        .createImmediateResponder()
-                        .setContent(EmojiParser.parseToUnicode("Respuesta default\n\n :warning: **Si est\u00E1s viendo esto por favor notificalo mediante el canal de soporte cuanto antes.**"))
-                        .setFlags(MessageFlag.EPHEMERAL)
-                        .respond();
             }
         }
     }
