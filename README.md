@@ -7,3 +7,4 @@ Current integrations:
 
 Development status:
 - Paused due to external factors
+(This doesn't mean I'll stop mantaining the code, this only refers to new features)
