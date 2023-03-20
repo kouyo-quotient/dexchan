@@ -33,7 +33,7 @@ public class UserJoinListener implements ServerMemberJoinListener {
                 .addEmbed(new EmbedBuilder()
                         .setTitle("<:newmember:1061067766616031283> Nuevo miembro")
                         .setAuthor(event.getUser().getDiscriminatedName(), "", event.getUser().getAvatar())
-                        .setDescription("<:joinemoji:1030913139627282472> \u00A1Bienvenido <@" + event.getUser().getId() + ">! \n Eres el usuario #" + event.getServer().getMemberCount() + " en el servidor!")
+                        .setDescription("<:joinemoji:1030913139627282472> \u00A1Bienvenido <@" + event.getUser().getId() + ">! \n Eres el usuario #" + event.getServer().getMemberCount() + " en el servidor.")
                         .addInlineField("<:id:1030914893643268157> ID:", String.valueOf(event.getUser().getId()))
                         .addInlineField("<:clock:1030915302323650590> Fecha de llegada:", "<t:" + getTimestamp + ":F>")
                         .setColor(new Color(58, 145, 90)))

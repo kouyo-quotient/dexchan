@@ -22,7 +22,12 @@ public class FeedbackCommand implements MessageCreateListener, SlashCommandCreat
 
     String message = String.valueOf(new MessageBuilder()
             .setAllowedMentions(allowedMentions)
-            .append("Ya que MangaDex se encuentra actualmente en Accesso Anticipado\u2122\uFE0F, nuestra prioridad actual es implementar caracter\u00EDsticas para que la gente las use. En un futuro pr\u00F3ximo, la apariencia del sitio cambiar\u00E1 dr\u00E1sticamente a medida que nuestro enfoque pase de la implementaci\u00F3n a la presentaci\u00F3n. Por lo tanto, no estamos aceptando muchas sugerencias en este momento. Si tienes alg\u00FAn error que reportar con la implementaci\u00F3n de alguna caracter\u00EDstica actual, no dudes en hac\u00E9rnoslo saber.").getStringBuilder());
+            .append("""
+                    Las sugerencias deben ir en los foros respectivos:
+                    - Para el sitio principal: <https://forums.mangadex.org/forums/mainsite-suggestions.99/
+                    - Para los foros: <https://forums.mangadex.org/forums/forum-suggestions.104/
+                    - Para la API: <https://forums.mangadex.org/forums/api-suggestions.144/
+                    """).getStringBuilder());
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
