@@ -22,7 +22,7 @@ dependencies {
     implementation 'org.javacord:javacord:3.8.0'
     implementation 'com.konghq:unirest-java:3.14.5'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.21.0'
     implementation 'com.vdurmont:emoji-java:5.1.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'redis.clients:jedis:5.0.1'
