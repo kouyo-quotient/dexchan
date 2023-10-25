@@ -4,14 +4,14 @@ plugins {
 }
 
 group 'com.github.kouyo-quotient'
-version '1.5'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
+version '1.5.1'
 
 application {
     mainClass = 'com.github.kouyoquotient.Main'
+}
+
+java {
+    JavaLanguageVersion.of("21")
 }
 
 repositories {
