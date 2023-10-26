@@ -16,6 +16,7 @@ import redis.clients.jedis.JedisPooled;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class Main {
     public static final Logger logger = LogManager.getRootLogger();
@@ -30,33 +31,37 @@ public class Main {
                 .login()
                 .join();
 
-        // Register commands
-        SlashCommand.with("help", "Lista completa de comandos de ayuda").createGlobal(api).join();
-        api.addMessageCreateListener(new HelpCommand());
-        api.addSlashCommandCreateListener(new HelpCommand());
+        if(args.length == 1){
+            if(Objects.equals(args[0], "-command-register")){
+                // Register commands
+                SlashCommand.with("help", "Lista completa de comandos de ayuda").createGlobal(api).join();
+                api.addMessageCreateListener(new HelpCommand());
+                api.addSlashCommandCreateListener(new HelpCommand());
 
-        SlashCommand.with("funciones", "Caracter\u00EDsticas que est\u00E1n o no disponibles ahora mismo en el sitio").createGlobal(api).join();
-        api.addMessageCreateListener(new FuncionesCommand());
-        api.addSlashCommandCreateListener(new FuncionesCommand());
+                SlashCommand.with("funciones", "Características que están o no disponibles ahora mismo en el sitio").createGlobal(api).join();
+                api.addMessageCreateListener(new FuncionesCommand());
+                api.addSlashCommandCreateListener(new FuncionesCommand());
 
-        SlashCommand.with("feedback", "Informaci\u00F3n sobre la implementaci\u00F3n de sugerencias").createGlobal(api).join();
-        api.addMessageCreateListener(new FeedbackCommand());
-        api.addSlashCommandCreateListener(new FeedbackCommand());
+                SlashCommand.with("feedback", "Información sobre la implementación de sugerencias").createGlobal(api).join();
+                api.addMessageCreateListener(new FeedbackCommand());
+                api.addSlashCommandCreateListener(new FeedbackCommand());
 
-        SlashCommand.with("diagnostico", "Tabla de diagn\u00F3stico sobre problemas de acceso al sitio").createGlobal(api).join();
-        api.addMessageCreateListener(new DiagnosticoCommand());
-        api.addSlashCommandCreateListener(new DiagnosticoCommand());
+                SlashCommand.with("diagnostico", "Tabla de diagnóstico sobre problemas de acceso al sitio").createGlobal(api).join();
+                api.addMessageCreateListener(new DiagnosticoCommand());
+                api.addSlashCommandCreateListener(new DiagnosticoCommand());
 
-        SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio").createGlobal(api).join();
-        api.addMessageCreateListener(new Isrgx1Command());
-        api.addSlashCommandCreateListener(new Isrgx1Command());
+                SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio").createGlobal(api).join();
+                api.addMessageCreateListener(new Isrgx1Command());
+                api.addSlashCommandCreateListener(new Isrgx1Command());
 
-        SlashCommand.with("aprobacion", "Informaci\u00F3n sobre la cola de aprobaci\u00F3n de cap\u00EDtulos").createGlobal(api).join();
-        api.addMessageCreateListener(new AprobacionCommand());
-        api.addSlashCommandCreateListener(new AprobacionCommand());
+                SlashCommand.with("aprobacion", "Información sobre la cola de aprobación de capítulos").createGlobal(api).join();
+                api.addMessageCreateListener(new AprobacionCommand());
+                api.addSlashCommandCreateListener(new AprobacionCommand());
 
-        SlashCommand.with("ping", "Test command").createGlobal(api).join();
-        api.addSlashCommandCreateListener(new PingCommand());
+                SlashCommand.with("ping", "Test command").createGlobal(api).join();
+                api.addSlashCommandCreateListener(new PingCommand());
+            }
+        }
 
         api.addMessageCreateListener(new Pull());
         api.addMessageCreateListener(new BuildRoleSelectorCommand());
