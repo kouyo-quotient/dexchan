@@ -1,6 +1,5 @@
 package com.github.kouyoquotient;
 
-import com.github.kouyoquotient.commands.BuildRoleSelectorCommand;
 import com.github.kouyoquotient.commands.PingCommand;
 import com.github.kouyoquotient.commands.Pull;
 import com.github.kouyoquotient.commands.supportchannel.*;
@@ -33,40 +32,40 @@ public class Main {
 
         if(args.length == 1){
             if(Objects.equals(args[0], "-command-register")){
+                logger.info("Registering commands");
                 // Register commands
                 SlashCommand.with("help", "Lista completa de comandos de ayuda").createGlobal(api).join();
-                api.addMessageCreateListener(new HelpCommand());
-                api.addSlashCommandCreateListener(new HelpCommand());
-
                 SlashCommand.with("funciones", "Características que están o no disponibles ahora mismo en el sitio").createGlobal(api).join();
-                api.addMessageCreateListener(new FuncionesCommand());
-                api.addSlashCommandCreateListener(new FuncionesCommand());
-
                 SlashCommand.with("feedback", "Información sobre la implementación de sugerencias").createGlobal(api).join();
-                api.addMessageCreateListener(new FeedbackCommand());
-                api.addSlashCommandCreateListener(new FeedbackCommand());
-
                 SlashCommand.with("diagnostico", "Tabla de diagnóstico sobre problemas de acceso al sitio").createGlobal(api).join();
-                api.addMessageCreateListener(new DiagnosticoCommand());
-                api.addSlashCommandCreateListener(new DiagnosticoCommand());
-
                 SlashCommand.with("isrgx1", "Instrucciones sobre problemas con certificados al acceder al sitio").createGlobal(api).join();
-                api.addMessageCreateListener(new Isrgx1Command());
-                api.addSlashCommandCreateListener(new Isrgx1Command());
-
                 SlashCommand.with("aprobacion", "Información sobre la cola de aprobación de capítulos").createGlobal(api).join();
-                api.addMessageCreateListener(new AprobacionCommand());
-                api.addSlashCommandCreateListener(new AprobacionCommand());
-
                 SlashCommand.with("ping", "Test command").createGlobal(api).join();
-                api.addSlashCommandCreateListener(new PingCommand());
             }
         }
+        logger.info("Registering listeners");
+        api.addSlashCommandCreateListener(new PingCommand());
+
+        api.addMessageCreateListener(new AprobacionCommand());
+        api.addSlashCommandCreateListener(new AprobacionCommand());
+
+        api.addMessageCreateListener(new Isrgx1Command());
+        api.addSlashCommandCreateListener(new Isrgx1Command());
+
+        api.addMessageCreateListener(new DiagnosticoCommand());
+        api.addSlashCommandCreateListener(new DiagnosticoCommand());
+
+        api.addMessageCreateListener(new FeedbackCommand());
+        api.addSlashCommandCreateListener(new FeedbackCommand());
+
+        api.addMessageCreateListener(new FuncionesCommand());
+        api.addSlashCommandCreateListener(new FuncionesCommand());
+
+        api.addMessageCreateListener(new HelpCommand());
+        api.addSlashCommandCreateListener(new HelpCommand());
 
         api.addMessageCreateListener(new Pull());
-        api.addMessageCreateListener(new BuildRoleSelectorCommand());
 
-        // Register Listeners
         api.addSelectMenuChooseListener(new RoleSelectorListener());
         api.addServerMemberJoinListener(new UserJoinListener());
         /*
