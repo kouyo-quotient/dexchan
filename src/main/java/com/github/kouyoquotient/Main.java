@@ -3,7 +3,6 @@ package com.github.kouyoquotient;
 import com.github.kouyoquotient.commands.PingCommand;
 import com.github.kouyoquotient.commands.Pull;
 import com.github.kouyoquotient.commands.supportchannel.*;
-import com.github.kouyoquotient.listeners.RoleSelectorListener;
 import com.github.kouyoquotient.listeners.UserJoinListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +65,6 @@ public class Main {
 
         api.addMessageCreateListener(new Pull());
 
-        api.addSelectMenuChooseListener(new RoleSelectorListener());
         api.addServerMemberJoinListener(new UserJoinListener());
         /*
          * WARNING:
