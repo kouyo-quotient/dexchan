@@ -4,14 +4,14 @@ plugins {
 }
 
 group 'com.github.kouyo-quotient'
-version '1.5.1'
+version '1.5.2'
 
 application {
     mainClass = 'com.github.kouyoquotient.Main'
 }
 
 java {
-    JavaLanguageVersion.of("21")
+    JavaLanguageVersion.of("20")
 }
 
 repositories {
@@ -25,6 +25,9 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.21.1'
     implementation 'com.vdurmont:emoji-java:5.1.1'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.jayway.jsonpath:json-path:2.8.0'
+    implementation 'com.jayway.jsonpath:json-path-assert:2.8.0'
+    implementation 'com.jayway.jsonpath:json-path-parent:1.1.0'
     implementation 'redis.clients:jedis:5.0.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
