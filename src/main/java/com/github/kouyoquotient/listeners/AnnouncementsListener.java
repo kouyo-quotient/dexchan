@@ -1,5 +1,7 @@
 package com.github.kouyoquotient.listeners;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.Icon;
 import org.javacord.api.entity.message.MessageAttachment;
@@ -16,10 +18,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.kouyoquotient.Main.logger;
-import static com.github.kouyoquotient.utils.Constants.*;
+import static com.github.kouyoquotient.utils.Constants.ANNOUNCEMENT_WEBHOOK_URL;
+import static com.github.kouyoquotient.utils.Constants.announceReceiveChannel;
 
 public class AnnouncementsListener implements MessageCreateListener {
+    private static final Logger logger = LogManager.getRootLogger();
 
     /*
      * WARNING:

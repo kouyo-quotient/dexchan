@@ -1,5 +1,7 @@
 package com.github.kouyoquotient.commands.supportchannel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentions;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
@@ -8,11 +10,11 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 import org.javacord.api.listener.message.MessageCreateListener;
 
-import static com.github.kouyoquotient.Main.logger;
 import static com.github.kouyoquotient.utils.Constants.SUPPORT_CHANNEL;
 import static org.javacord.api.entity.message.MessageFlag.EPHEMERAL;
 
 public class Isrgx1Command implements MessageCreateListener, SlashCommandCreateListener {
+    private static final Logger logger = LogManager.getRootLogger();
 
     AllowedMentions allowedMentions = new AllowedMentionsBuilder()
             .setMentionEveryoneAndHere(false)

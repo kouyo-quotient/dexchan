@@ -7,10 +7,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import redis.clients.jedis.JedisPooled;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,10 +21,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.github.kouyoquotient.Main.jedis;
-import static com.github.kouyoquotient.Main.logger;
-
 public class Pull implements MessageCreateListener {
+    private static final Logger logger = LogManager.getRootLogger();
+    public static final JedisPooled jedis = new JedisPooled("localhost", 6379);
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
