@@ -9,11 +9,9 @@ public class JSONRead {
     private float limit;
     private float offset;
     private float total;
-
     public ArrayList<Object> getData() {
         return data;
     }
-
     public String getResult() {
         return result;
     }
