@@ -2,6 +2,7 @@ package com.github.kouyoquotient;
 
 import com.github.kouyoquotient.commands.PingCommand;
 import com.github.kouyoquotient.commands.Pull;
+import com.github.kouyoquotient.commands.mdcommands.SearchCommand;
 import com.github.kouyoquotient.commands.mdcommands.TitleCommand;
 import com.github.kouyoquotient.commands.supportchannel.*;
 import com.github.kouyoquotient.listeners.UserJoinListener;
@@ -16,6 +17,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -42,7 +44,12 @@ public class Main {
                 SlashCommand.with("aprobacion", "Informaci\u00F3n sobre la cola de aprobaci\u00F3n de cap\u00EDtulos").createGlobal(api).join();
                 SlashCommand.with("title", "Informaci\u00F3n sobre un titulo en MangaDex",
                         Collections.singletonList(
-                                SlashCommandOption.create(SlashCommandOptionType.STRING, "UUID", "UUID del t\u00EDtulo")
+                                SlashCommandOption.create(SlashCommandOptionType.STRING, "UUID", "UUID del t\u00EDtulo", true)
+                        )).createGlobal(api).join();
+                SlashCommand.with("search", "Busca un t\u00EDtulo en MangaDex",
+                        Arrays.asList(
+                                SlashCommandOption.create(SlashCommandOptionType.STRING, "Nombre", "Nombre del t\u00EDtulo", true),
+                                SlashCommandOption.create(SlashCommandOptionType.BOOLEAN, "Lista", "Muestra los resultados en una lista para elegir", false)
                         )).createGlobal(api).join();
                 SlashCommand.with("ping", "Test command").createGlobal(api).join();
             }
@@ -71,6 +78,9 @@ public class Main {
 
         api.addMessageCreateListener(new TitleCommand());
         api.addSlashCommandCreateListener(new TitleCommand());
+
+        api.addMessageCreateListener(new SearchCommand());
+        api.addSlashCommandCreateListener(new SearchCommand());
 
         api.addMessageCreateListener(new Pull());
 
