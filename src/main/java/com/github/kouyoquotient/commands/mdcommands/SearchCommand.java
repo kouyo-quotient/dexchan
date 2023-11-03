@@ -1,7 +1,9 @@
 package com.github.kouyoquotient.commands.mdcommands;
 
 import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import net.minidev.json.JSONArray;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class SearchCommand implements SlashCommandCreateListener, MessageCreateListener {
@@ -48,8 +51,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
 
                 Object parsedJson = Configuration.defaultConfiguration().jsonProvider().parse(httpResponse.getBody());
 
-                Object mainTitles = JsonPath.read(parsedJson, "$.data[*].attributes.title.en");
-                String[] values = mainTitles.toString().replaceAll("[\\[\\]\"]", "").split(",");
+                List<String> mainTitles = JsonPath.read(parsedJson, "$.data[*].attributes.title.en");
                 Object titlesID = JsonPath.read(parsedJson, "$.data[*].id");
 
                 JSONArray jsonArray = (JSONArray) titlesID;
@@ -61,17 +63,16 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     titlesArray[i] = jsonArray.get(i).toString();
                 }
 
-                StringBuilder formattedResultTitles = new StringBuilder();
-                for (int i = 0; i < values.length; i++) {
-                    formattedResultTitles.append((i + 1)).append(". ").append(values[i]).append("\n");
+                StringBuilder formattedTitles = new StringBuilder();
+                for (int i = 0; i < mainTitles.size(); i++) {
+                    formattedTitles.append((i + 1)).append(". ").append(mainTitles.get(i)).append("\n");
                 }
+                String resultFormat = formattedTitles.toString();
+                String result = StringEscapeUtils.unescapeJava(resultFormat);
 
-                String markdownResult = formattedResultTitles.toString();
-                String result = StringEscapeUtils.unescapeJava(markdownResult);
-
-                slashCommandCreateEvent.getSlashCommandInteraction().respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+                slashCommandCreateEvent.getSlashCommandInteraction().respondLater().thenCompose(interactionOriginalResponseUpdater -> {
                     logger.info("Prompting user with search selection");
-                    interactionOriginalResponseUpdater.setContent("Por favor introduce el n\u00FAmero del manga que deseas \n" + result).update();
+                    interactionOriginalResponseUpdater.setContent("Escribe el n\u00FAmero del manga que deseas \n" + result).update();
 
                     api.addMessageCreateListener(event -> {
                         if (!event.getMessageContent().matches("[0-9]+")) {
@@ -99,27 +100,118 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                             "&includes[]=artist")
                                     .asString();
                             Object newParsedJson = Configuration.defaultConfiguration().jsonProvider().parse(searchSelectedTitle.getBody());
+                            DocumentContext context = JsonPath.parse(parsedJson);
 
-                            String mainTitle = JsonPath.read(newParsedJson, "$.data.attributes.title.en");
-                            String description = JsonPath.read(newParsedJson, "$.data.attributes.description.en");
+                            Object getTitle = context.read("$.data[0].attributes.title.en");
+                            if (getTitle == null) {
+                                getTitle = context.read("$.data[0].attributes.title.*[0]");
+                            }
+
+                            Object getDescription = "";
+                            try {
+                                List<Map<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*].attributes.description");
+                                for (Map<String, Object> descriptions : dataList) {
+                                    if (descriptions.containsKey("en")) {
+                                        getDescription = descriptions.get("en");
+                                        break;
+                                    } else if (!descriptions.isEmpty()) {
+                                        getDescription = descriptions.values().iterator().next();
+                                        break;
+                                    }
+                                }
+                            } catch (PathNotFoundException e) {
+                                logger.error(e);
+                            }
+
+                            List<LinkedHashMap<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*]");
+
+                            List<String> themeTags = new ArrayList<>();
+                            List<String> genreTags = new ArrayList<>();
+                            List<String> contentWarningTags = new ArrayList<>();
+                            List<String> demographic = new ArrayList<>();
+
+                            for (LinkedHashMap<String, Object> data : dataList) {
+                                List<LinkedHashMap<String, Object>> tags = (List<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) data.get("attributes")).get("tags");
+                                for (LinkedHashMap<String, Object> tag : tags) {
+                                    LinkedHashMap<String, Object> attributes = (LinkedHashMap<String, Object>) tag.get("attributes");
+                                    LinkedHashMap<String, String> name = (LinkedHashMap<String, String>) attributes.get("name");
+
+                                    if ("theme".equals(attributes.get("group"))) {
+                                        themeTags.add(name.get("en"));
+                                    } else if ("genre".equals(attributes.get("group"))) {
+                                        genreTags.add(name.get("en"));
+                                    } else if ("content".equals(attributes.get("group"))) {
+                                        contentWarningTags.add(name.get("en"));
+                                    }
+                                }
+
+                                for (LinkedHashMap<String, Object> demographicData : dataList) {
+                                    List<LinkedHashMap<String, Object>> getDemographic = (List<LinkedHashMap<String, Object>>) demographicData.get("data");
+                                    if (getDemographic != null) {
+                                        for (LinkedHashMap<String, Object> demographicTag : getDemographic) {
+                                            LinkedHashMap<String, String> attributes = (LinkedHashMap<String, String>) demographicTag.get("attributes");
+                                            String publicationDemographic = attributes.get("publicationDemographic");
+                                            if (publicationDemographic != null) {
+                                                demographic.add(publicationDemographic);
+                                            } else {
+                                                demographic.add("La informaci\u00F3n no existe");
+                                            }
+                                        }
+                                    } else {
+                                        demographic.add("La informaci\u00F3n no existe");
+                                    }
+                                }
+                            }
+
+
+                            Set<String> themeTagsSet = new HashSet<>(themeTags);
+                            Set<String> genreTagsSet = new HashSet<>(genreTags);
+                            Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
+                            Set<String> publicationDemographicSet = new HashSet<>(demographic);
+
+                            themeTags = new ArrayList<>(themeTagsSet);
+                            genreTags = new ArrayList<>(genreTagsSet);
+                            contentWarningTags = new ArrayList<>(contentWarningTagsSet);
+                            demographic = new ArrayList<>(publicationDemographicSet);
+
+
                             Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                             Object mangaAuthorObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'author')].attributes.name");
                             Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
+                            String pubStatus = JsonPath.read(newParsedJson, "$.data.attributes.status");
+                            String contentRating = JsonPath.read(newParsedJson, "$.data.attributes.contentRating");
 
-                            String coverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
-                            String authorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
-                            String artistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaArtistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaTitle = getTitle.toString().replaceAll("[\\[\\]\"]", "");
+                            String titleDescription = getDescription.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaThemeTags = themeTags.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaGenreTags = genreTags.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaContentWarning = contentWarningTags.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
+                            String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
+                            String mangaPubDemographic = demographic.toString().replaceAll("[\\[\\]\"]", "");
 
-                            String coverArtURL = "https://uploads.mangadex.org/covers/" + selectedTitle + "/" + coverArtUUID + ".256.jpg";
+                            String coverArtURL = "https://uploads.mangadex.org/covers/" + selectedTitle + "/" + mangaCoverArtUUID + ".256.jpg";
                             URI uri = new URI(coverArtURL);
                             URL coverArtURItoURL = uri.toURL();
 
                             EmbedBuilder responseEmbed = new EmbedBuilder()
-                                    .setTitle(mainTitle)
-                                    .setDescription(description)
-                                    .setAuthor("MangaDex", "https://mangadex.org/manga/" + selectedTitle, "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
-                                    .addField("Autores:", authorNames)
-                                    .addInlineField("Artistas:", artistNames)
+                                    .setTitle(mangaTitle)
+                                    .setUrl("https://mangadex.org/title/" + selectedTitle)
+                                    .setDescription(titleDescription)
+                                    .setAuthor("MangaDex", "", "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
+                                    .addInlineField("Autor(es):", mangaAuthorNames)
+                                    .addInlineField("Artista(s):", mangaArtistNames)
+                                    .addInlineField("Estado de publicaci\u00F3n:", mangaPubStatus)
+                                    .addInlineField("Clasificaci\u00F3n de contenido:", mangaContentRating)
+                                    .addInlineField("Advertencias de contenido:", mangaContentWarning)
+                                    .addInlineField("Demograf\u00EDa", mangaPubDemographic)
+                                    .addInlineField("G\u00E9neros:", mangaThemeTags)
+                                    .addInlineField("Temas:", mangaGenreTags)
+//                                    .addInlineField("Leelo o compralo:", "")
+//                                    .addInlineField("Rastreo:", ""))
                                     .setThumbnail(coverArtURItoURL.openStream());
 
                             event.getMessage().reply(responseEmbed).join();
@@ -127,7 +219,8 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         } catch (IOException | URISyntaxException e) {
                             throw new RuntimeException(e);
                         }
-                    }).removeAfter(20, TimeUnit.SECONDS);
+                    }).removeAfter(10, TimeUnit.SECONDS);
+                    return null;
                 });
                 return;
             }
@@ -159,27 +252,117 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                     "&includes[]=artist")
                             .asString();
                     Object newParsedJson = Configuration.defaultConfiguration().jsonProvider().parse(searchSelectedTitle.getBody());
+                    DocumentContext context = JsonPath.parse(parsedJson);
 
-                    String mainTitle = JsonPath.read(newParsedJson, "$.data.attributes.title.en");
-                    String description = JsonPath.read(newParsedJson, "$.data.attributes.description.en");
+                    Object getTitle = context.read("$.data[0].attributes.title.en");
+                    if (getTitle == null) {
+                        getTitle = context.read("$.data[0].attributes.title.*[0]");
+                    }
+
+                    Object getDescription = "";
+                    try {
+                        List<Map<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*].attributes.description");
+                        for (Map<String, Object> descriptions : dataList) {
+                            if (descriptions.containsKey("en")) {
+                                getDescription = descriptions.get("en");
+                                break;
+                            } else if (!descriptions.isEmpty()) {
+                                getDescription = descriptions.values().iterator().next();
+                                break;
+                            }
+                        }
+                    } catch (PathNotFoundException e) {
+                        logger.error(e);
+                    }
+
+                    List<LinkedHashMap<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*]");
+
+                    List<String> themeTags = new ArrayList<>();
+                    List<String> genreTags = new ArrayList<>();
+                    List<String> contentWarningTags = new ArrayList<>();
+                    List<String> demographic = new ArrayList<>();
+
+                    for (LinkedHashMap<String, Object> data : dataList) {
+                        List<LinkedHashMap<String, Object>> tags = (List<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) data.get("attributes")).get("tags");
+                        for (LinkedHashMap<String, Object> tag : tags) {
+                            LinkedHashMap<String, Object> attributes = (LinkedHashMap<String, Object>) tag.get("attributes");
+                            LinkedHashMap<String, String> name = (LinkedHashMap<String, String>) attributes.get("name");
+
+                            if ("theme".equals(attributes.get("group"))) {
+                                themeTags.add(name.get("en"));
+                            } else if ("genre".equals(attributes.get("group"))) {
+                                genreTags.add(name.get("en"));
+                            } else if ("content".equals(attributes.get("group"))) {
+                                contentWarningTags.add(name.get("en"));
+                            }
+                        }
+
+                        for (LinkedHashMap<String, Object> demographicData : dataList) {
+                            List<LinkedHashMap<String, Object>> getDemographic = (List<LinkedHashMap<String, Object>>) demographicData.get("data");
+                            if (getDemographic != null) {
+                                for (LinkedHashMap<String, Object> demographicTag : getDemographic) {
+                                    LinkedHashMap<String, String> attributes = (LinkedHashMap<String, String>) demographicTag.get("attributes");
+                                    String publicationDemographic = attributes.get("publicationDemographic");
+                                    if (publicationDemographic != null) {
+                                        demographic.add(publicationDemographic);
+                                    } else {
+                                        demographic.add("La informaci\u00F3n no existe");
+                                    }
+                                }
+                            } else {
+                                demographic.add("La informaci\u00F3n no existe");
+                            }
+                        }
+                    }
+
+                    Set<String> themeTagsSet = new HashSet<>(themeTags);
+                    Set<String> genreTagsSet = new HashSet<>(genreTags);
+                    Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
+                    Set<String> publicationDemographicSet = new HashSet<>(demographic);
+
+                    themeTags = new ArrayList<>(themeTagsSet);
+                    genreTags = new ArrayList<>(genreTagsSet);
+                    contentWarningTags = new ArrayList<>(contentWarningTagsSet);
+                    demographic = new ArrayList<>(publicationDemographicSet);
+
+
                     Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                     Object mangaAuthorObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'author')].attributes.name");
                     Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
+                    String pubStatus = JsonPath.read(newParsedJson, "$.data.attributes.status");
+                    String contentRating = JsonPath.read(newParsedJson, "$.data.attributes.contentRating");
 
-                    String coverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
-                    String authorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
-                    String artistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaArtistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaTitle = getTitle.toString().replaceAll("[\\[\\]\"]", "");
+                    String titleDescription = getDescription.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaThemeTags = themeTags.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaGenreTags = genreTags.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaContentWarning = contentWarningTags.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
+                    String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
+                    String mangaPubDemographic = demographic.toString().replaceAll("[\\[\\]\"]", "");
 
-                    String coverArtURL = "https://uploads.mangadex.org/covers/" + relevantTitleID + "/" + coverArtUUID + ".256.jpg";
+                    String coverArtURL = "https://uploads.mangadex.org/covers/" + relevantTitleID + "/" + mangaCoverArtUUID + ".256.jpg";
                     URI uri = new URI(coverArtURL);
                     URL coverArtURItoURL = uri.toURL();
 
                     EmbedBuilder responseEmbed = new EmbedBuilder()
-                            .setTitle(mainTitle)
-                            .setDescription(description)
-                            .setAuthor("MangaDex", "https://mangadex.org/manga/" + relevantTitleID, "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
-                            .addField("Autores:", authorNames)
-                            .addInlineField("Artistas:", artistNames)
+                            .setTitle(mangaTitle)
+                            .setUrl("https://mangadex.org/title/" + relevantTitleID)
+                            .setDescription(titleDescription)
+                            .setAuthor("MangaDex", "", "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
+                            .addInlineField("Autor(es):", mangaAuthorNames)
+                            .addInlineField("Artista(s):", mangaArtistNames)
+                            .addInlineField("Estado de publicaci\u00F3n:", mangaPubStatus)
+                            .addInlineField("Clasificaci\u00F3n de contenido:", mangaContentRating)
+                            .addInlineField("Advertencias de contenido:", mangaContentWarning)
+                            .addInlineField("Demograf\u00EDa", mangaPubDemographic)
+                            .addInlineField("G\u00E9neros:", mangaThemeTags)
+                            .addInlineField("Temas:", mangaGenreTags)
+//                                    .addInlineField("Leelo o compralo:", "")
+//                                    .addInlineField("Rastreo:", ""))
                             .setThumbnail(coverArtURItoURL.openStream());
 
                     interactionOriginalResponseUpdater.addEmbed(responseEmbed).update().join();
