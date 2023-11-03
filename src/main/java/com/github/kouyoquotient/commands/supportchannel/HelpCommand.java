@@ -52,6 +52,7 @@ public class HelpCommand implements MessageCreateListener, SlashCommandCreateLis
 
             event.getChannel().sendMessage(message);
         }
+        return;
     }
 
     @Override

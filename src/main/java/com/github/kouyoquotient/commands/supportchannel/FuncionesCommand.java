@@ -61,6 +61,7 @@ public class FuncionesCommand implements MessageCreateListener, SlashCommandCrea
 
             event.getChannel().sendMessage(message);
         }
+        return;
     }
 
     @Override

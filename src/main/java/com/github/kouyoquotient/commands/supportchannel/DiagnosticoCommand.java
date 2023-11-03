@@ -78,6 +78,7 @@ public class DiagnosticoCommand implements MessageCreateListener, SlashCommandCr
 
             event.getChannel().sendMessage(message);
         }
+        return;
     }
 
     @Override

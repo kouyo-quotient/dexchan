@@ -17,12 +17,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public class TitleCommand implements MessageCreateListener, SlashCommandCreateListener {
+public class TitleCommand implements SlashCommandCreateListener, MessageCreateListener {
     private static final Logger logger = LogManager.getRootLogger();
-
-    @Override
-    public void onMessageCreate(MessageCreateEvent event) {
-    }
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
@@ -76,5 +72,10 @@ public class TitleCommand implements MessageCreateListener, SlashCommandCreateLi
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override
+    public void onMessageCreate(MessageCreateEvent event) {
+
     }
 }

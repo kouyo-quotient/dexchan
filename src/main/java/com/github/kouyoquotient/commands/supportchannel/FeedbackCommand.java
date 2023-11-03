@@ -45,6 +45,7 @@ public class FeedbackCommand implements MessageCreateListener, SlashCommandCreat
 
             event.getChannel().sendMessage(message);
         }
+        return;
     }
 
     @Override
