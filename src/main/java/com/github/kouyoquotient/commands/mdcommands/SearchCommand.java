@@ -128,7 +128,6 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             List<String> themeTags = new ArrayList<>();
                             List<String> genreTags = new ArrayList<>();
                             List<String> contentWarningTags = new ArrayList<>();
-                            List<String> demographic = new ArrayList<>();
 
                             for (LinkedHashMap<String, Object> data : dataList) {
                                 List<LinkedHashMap<String, Object>> tags = (List<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) data.get("attributes")).get("tags");
@@ -144,35 +143,16 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                         contentWarningTags.add(name.get("en"));
                                     }
                                 }
-
-                                for (LinkedHashMap<String, Object> demographicData : dataList) {
-                                    List<LinkedHashMap<String, Object>> getDemographic = (List<LinkedHashMap<String, Object>>) demographicData.get("data");
-                                    if (getDemographic != null) {
-                                        for (LinkedHashMap<String, Object> demographicTag : getDemographic) {
-                                            LinkedHashMap<String, String> attributes = (LinkedHashMap<String, String>) demographicTag.get("attributes");
-                                            String publicationDemographic = attributes.get("publicationDemographic");
-                                            if (publicationDemographic != null) {
-                                                demographic.add(publicationDemographic);
-                                            } else {
-                                                demographic.add("La informaci\u00F3n no existe");
-                                            }
-                                        }
-                                    } else {
-                                        demographic.add("La informaci\u00F3n no existe");
-                                    }
-                                }
                             }
 
 
                             Set<String> themeTagsSet = new HashSet<>(themeTags);
                             Set<String> genreTagsSet = new HashSet<>(genreTags);
                             Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
-                            Set<String> publicationDemographicSet = new HashSet<>(demographic);
 
                             themeTags = new ArrayList<>(themeTagsSet);
                             genreTags = new ArrayList<>(genreTagsSet);
                             contentWarningTags = new ArrayList<>(contentWarningTagsSet);
-                            demographic = new ArrayList<>(publicationDemographicSet);
 
 
                             Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
@@ -180,6 +160,11 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
                             String pubStatus = JsonPath.read(newParsedJson, "$.data.attributes.status");
                             String contentRating = JsonPath.read(newParsedJson, "$.data.attributes.contentRating");
+                            String publicationDemographic = JsonPath.read(newParsedJson, "$.data.attributes.publicationDemographic");
+
+                            if (publicationDemographic == null) {
+                                publicationDemographic = "Esta obra no tiene demografía";
+                            }
 
                             String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                             String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
@@ -191,7 +176,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             String mangaContentWarning = contentWarningTags.toString().replaceAll("[\\[\\]\"]", "");
                             String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
                             String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
-                            String mangaPubDemographic = demographic.toString().replaceAll("[\\[\\]\"]", "");
+                            String mangaPubDemographic = publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1);
 
                             String coverArtURL = "https://uploads.mangadex.org/covers/" + selectedTitle + "/" + mangaCoverArtUUID + ".256.jpg";
                             URI uri = new URI(coverArtURL);
@@ -280,7 +265,6 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     List<String> themeTags = new ArrayList<>();
                     List<String> genreTags = new ArrayList<>();
                     List<String> contentWarningTags = new ArrayList<>();
-                    List<String> demographic = new ArrayList<>();
 
                     for (LinkedHashMap<String, Object> data : dataList) {
                         List<LinkedHashMap<String, Object>> tags = (List<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) data.get("attributes")).get("tags");
@@ -296,34 +280,15 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 contentWarningTags.add(name.get("en"));
                             }
                         }
-
-                        for (LinkedHashMap<String, Object> demographicData : dataList) {
-                            List<LinkedHashMap<String, Object>> getDemographic = (List<LinkedHashMap<String, Object>>) demographicData.get("data");
-                            if (getDemographic != null) {
-                                for (LinkedHashMap<String, Object> demographicTag : getDemographic) {
-                                    LinkedHashMap<String, String> attributes = (LinkedHashMap<String, String>) demographicTag.get("attributes");
-                                    String publicationDemographic = attributes.get("publicationDemographic");
-                                    if (publicationDemographic != null) {
-                                        demographic.add(publicationDemographic);
-                                    } else {
-                                        demographic.add("La informaci\u00F3n no existe");
-                                    }
-                                }
-                            } else {
-                                demographic.add("La informaci\u00F3n no existe");
-                            }
-                        }
                     }
 
                     Set<String> themeTagsSet = new HashSet<>(themeTags);
                     Set<String> genreTagsSet = new HashSet<>(genreTags);
                     Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
-                    Set<String> publicationDemographicSet = new HashSet<>(demographic);
 
                     themeTags = new ArrayList<>(themeTagsSet);
                     genreTags = new ArrayList<>(genreTagsSet);
                     contentWarningTags = new ArrayList<>(contentWarningTagsSet);
-                    demographic = new ArrayList<>(publicationDemographicSet);
 
 
                     Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
@@ -331,6 +296,12 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
                     String pubStatus = JsonPath.read(newParsedJson, "$.data.attributes.status");
                     String contentRating = JsonPath.read(newParsedJson, "$.data.attributes.contentRating");
+                    String publicationDemographic = JsonPath.read(newParsedJson, "$.data.attributes.publicationDemographic");
+
+                    if (publicationDemographic == null) {
+                        publicationDemographic = "Esta obra no tiene demograf\u00EDa";
+                    }
+
 
                     String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                     String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
@@ -342,7 +313,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     String mangaContentWarning = contentWarningTags.toString().replaceAll("[\\[\\]\"]", "");
                     String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
                     String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
-                    String mangaPubDemographic = demographic.toString().replaceAll("[\\[\\]\"]", "");
+                    String mangaPubDemographic = publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1);
 
                     String coverArtURL = "https://uploads.mangadex.org/covers/" + relevantTitleID + "/" + mangaCoverArtUUID + ".256.jpg";
                     URI uri = new URI(coverArtURL);
