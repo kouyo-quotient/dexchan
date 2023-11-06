@@ -27,13 +27,42 @@ public class TitleLinkListener implements MessageCreateListener {
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
 
-        Pattern pattern = Pattern.compile("/title/([0-9a-fA-F\\-]+)/");
-        Matcher matcher = pattern.matcher(event.getMessageContent());
+        /* Link format starts with "https://mangadex.org/title/" followed by a UUID and optional extra text (slug).
+         * The URL should be surrounded by angle brackets.
+         *
+         * <https://mangadex.org/title/{UUID}/{Slug}>
+         *
+         * Examples that will match the pattern:
+         * <https://mangadex.org/title/efb4278c-a761-406b-9d69-19603c5e4c8b/the-100-girlfriends-who-really-really-really-really-really-love-you>
+         * or
+         * <https://mangadex.org/title/efb4278c-a761-406b-9d69-19603c5e4c8b/>
+         *
+         * If this type of link is found, the code stops.
+         */
 
-        if (matcher.find()) {
+        Pattern noEmbed = Pattern.compile("<(https://mangadex.org/title/([0-9a-fA-F\\\\-]+)(.+))?>");
+        Matcher matchNoEmbedUUID = noEmbed.matcher(event.getMessageContent());
+
+        if (matchNoEmbedUUID.find()) {
+            return;
+        }
+
+        /* Link format starts with "https://mangadex.org/title/" followed by a UUID and optional extra text (slug).
+         * https://mangadex.org/title/{UUID}/{Slug}
+         *
+         * Examples that will match the pattern:
+         * https://mangadex.org/title/efb4278c-a761-406b-9d69-19603c5e4c8b
+         * or
+         * https://mangadex.org/title/efb4278c-a761-406b-9d69-19603c5e4c8b/the-100-girlfriends-who-really-really-really-really-really-love-you
+         */
+
+        Pattern linkUUID = Pattern.compile("https://mangadex\\.org/title/([0-9a-fA-F\\-]+)");
+        Matcher matchUUID = linkUUID.matcher(event.getMessageContent());
+
+        if (matchUUID.find()) {
             try {
 
-                String uuid = matcher.group(1);
+                String uuid = matchUUID.group(1);
 
                 Unirest.config().defaultBaseUrl("https://api.mangadex.org");
                 HttpResponse<String> titleLookup = Unirest.get("/manga/" +
@@ -62,6 +91,11 @@ public class TitleLinkListener implements MessageCreateListener {
                     logger.error(e);
                 }
 
+                String contentRating = JsonPath.read(titleJson, "$.data.attributes.contentRating");
+                if (contentRating.equals("pornographic")) {
+                    event.getMessage().reply("As\u00ED te quer\u00EDa agarrar, puerco. :pig2:");
+                    return;
+                }
 
                 String getTitle = context.read("$.data.attributes.title.en");
                 if (getTitle == null) {
@@ -98,15 +132,14 @@ public class TitleLinkListener implements MessageCreateListener {
                 genreTags = new ArrayList<>(genreTagsSet);
                 contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
-                String contentRating = JsonPath.read(titleJson, "$.data.attributes.contentRating");
                 String publicationDemographic = JsonPath.read(titleJson, "$.data.attributes.publicationDemographic");
-                Double ratingAverage = JsonPath.read(titleStatisticsJson, "$.statistics."+uuid+".rating.average");
+                Double ratingAverage = JsonPath.read(titleStatisticsJson, "$.statistics." + uuid + ".rating.average");
 
                 String pubStatus = JsonPath.read(titleJson, "$.data.attributes.status");
                 Object coverArtObject = JsonPath.read(titleJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                 Integer yearPublication = JsonPath.read(titleJson, "$.data.attributes.year");
-                int followCount = JsonPath.read(titleStatisticsJson, "$.statistics."+uuid+".follows");
-                
+                int followCount = JsonPath.read(titleStatisticsJson, "$.statistics." + uuid + ".follows");
+
                 String mangaFollowCount = String.format("%,d", followCount);
 
                 String titleDescription = getDescription.replaceAll("[\\[\\]\"]", "");
@@ -119,7 +152,7 @@ public class TitleLinkListener implements MessageCreateListener {
                 String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
 
                 String mangaYearPublication = yearPublication != null ? yearPublication.toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
-                String mangaPubDemographic = publicationDemographic != null ? publicationDemographic.substring(0,1).toUpperCase() + publicationDemographic.substring(1) : "__*Esta obra no tiene demograf\u00EDa*__";
+                String mangaPubDemographic = publicationDemographic != null ? publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1) : "__*Esta obra no tiene demograf\u00EDa*__";
                 String mangaRatingAverage = ratingAverage != null ? ratingAverage.toString().substring(0, 3) : "__*Esta obra a\u00FAn no ha sido calificada*__";
 
                 String coverArtURL = "https://uploads.mangadex.org/covers/" + uuid + "/" + mangaCoverArtUUID + ".256.jpg";
