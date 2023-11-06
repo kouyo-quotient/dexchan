@@ -104,7 +104,7 @@ public class TitleLinkListener implements MessageCreateListener {
 
                 String pubStatus = JsonPath.read(titleJson, "$.data.attributes.status");
                 Object coverArtObject = JsonPath.read(titleJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
-                String yearPublication = JsonPath.read(titleJson, "$.data.attributes.year").toString();
+                Integer yearPublication = JsonPath.read(titleJson, "$.data.attributes.year");
                 int followCount = JsonPath.read(titleStatisticsJson, "$.statistics."+uuid+".follows");
                 
                 String mangaFollowCount = String.format("%,d", followCount);
@@ -118,7 +118,7 @@ public class TitleLinkListener implements MessageCreateListener {
                 String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                 String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
 
-                String mangaYearPublication = yearPublication != null ? JsonPath.read(titleJson, "$.data.attributes.year").toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
+                String mangaYearPublication = yearPublication != null ? yearPublication.toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
                 String mangaPubDemographic = publicationDemographic != null ? JsonPath.read(titleJson, "$.data.attributes.publicationDemographic") : "__*Esta obra no tiene demograf\u00EDa*__";
                 String mangaRatingAverage = ratingAverage != null ? ratingAverage.toString().substring(0, 3) : "__*Esta obra a\u00FAn no ha sido calificada*__";
 
