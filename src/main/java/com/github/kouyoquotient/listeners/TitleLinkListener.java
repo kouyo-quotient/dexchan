@@ -100,7 +100,7 @@ public class TitleLinkListener implements MessageCreateListener {
 
                 String contentRating = JsonPath.read(titleJson, "$.data.attributes.contentRating");
                 String publicationDemographic = JsonPath.read(titleJson, "$.data.attributes.publicationDemographic");
-                String ratingAverage = JsonPath.read(titleStatisticsJson, "$.statistics."+uuid+".rating.average").toString();
+                Double ratingAverage = JsonPath.read(titleStatisticsJson, "$.statistics."+uuid+".rating.average");
 
                 String pubStatus = JsonPath.read(titleJson, "$.data.attributes.status");
                 Object coverArtObject = JsonPath.read(titleJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
@@ -120,7 +120,7 @@ public class TitleLinkListener implements MessageCreateListener {
 
                 String mangaYearPublication = yearPublication != null ? JsonPath.read(titleJson, "$.data.attributes.year").toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
                 String mangaPubDemographic = publicationDemographic != null ? JsonPath.read(titleJson, "$.data.attributes.publicationDemographic") : "__*Esta obra no tiene demograf\u00EDa*__";
-                String mangaRatingAverage = ratingAverage != null ? ratingAverage.substring(0, 3) : "__*Esta obra a\u00FAn no ha sido calificada*__";
+                String mangaRatingAverage = ratingAverage != null ? ratingAverage.toString().substring(0, 3) : "__*Esta obra a\u00FAn no ha sido calificada*__";
 
                 String coverArtURL = "https://uploads.mangadex.org/covers/" + uuid + "/" + mangaCoverArtUUID + ".256.jpg";
                 URI uri = new URI(coverArtURL);
