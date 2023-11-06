@@ -3,7 +3,6 @@ package com.github.kouyoquotient;
 import com.github.kouyoquotient.commands.PingCommand;
 import com.github.kouyoquotient.commands.Pull;
 import com.github.kouyoquotient.commands.mdcommands.SearchCommand;
-import com.github.kouyoquotient.commands.mdcommands.TitleCommand;
 import com.github.kouyoquotient.commands.supportchannel.*;
 import com.github.kouyoquotient.listeners.TitleLinkListener;
 import com.github.kouyoquotient.listeners.UserJoinListener;
@@ -76,9 +75,6 @@ public class Main {
 
         api.addMessageCreateListener(new HelpCommand());
         api.addSlashCommandCreateListener(new HelpCommand());
-
-        api.addMessageCreateListener(new TitleCommand());
-        api.addSlashCommandCreateListener(new TitleCommand());
 
         api.addMessageCreateListener(new SearchCommand());
         api.addSlashCommandCreateListener(new SearchCommand());
