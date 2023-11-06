@@ -7,7 +7,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import net.minidev.json.JSONArray;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
@@ -21,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -42,10 +42,12 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         .getArgumentStringValueByName("Nombre")
                         .orElseThrow();
 
+                String encodedSearchValue = java.net.URLEncoder.encode(searchValue, StandardCharsets.UTF_8);
+
                 Unirest.config().defaultBaseUrl("https://api.mangadex.org");
                 HttpResponse<String> httpResponse = Unirest.get("/manga/" +
                                 "?title=" +
-                                searchValue +
+                                encodedSearchValue +
                                 "&order[relevance]=desc")
                         .asString();
 
@@ -68,11 +70,10 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     formattedTitles.append((i + 1)).append(". ").append(mainTitles.get(i)).append("\n");
                 }
                 String resultFormat = formattedTitles.toString();
-                String result = StringEscapeUtils.unescapeJava(resultFormat);
 
                 slashCommandCreateEvent.getSlashCommandInteraction().respondLater().thenCompose(interactionOriginalResponseUpdater -> {
                     logger.info("Prompting user with search selection");
-                    interactionOriginalResponseUpdater.setContent("Escribe el n\u00FAmero del manga que deseas \n" + result).update();
+                    interactionOriginalResponseUpdater.setContent("Escribe el n\u00FAmero del manga que deseas \n" + resultFormat).update();
 
                     api.addMessageCreateListener(event -> {
                         if (!event.getMessageContent().matches("[0-9]+")) {
@@ -107,7 +108,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 getTitle = context.read("$.data[0].attributes.title.*[0]");
                             }
 
-                            Object getDescription = "";
+                            Object getDescription = "__*Esta obra no tiene descripci\u00F3n*__";
                             try {
                                 List<Map<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*].attributes.description");
                                 for (Map<String, Object> descriptions : dataList) {
@@ -218,10 +219,12 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         .getArgumentStringValueByName("Nombre")
                         .orElseThrow();
 
+                String encodedSearchValue = java.net.URLEncoder.encode(searchValue, StandardCharsets.UTF_8);
+
                 Unirest.config().defaultBaseUrl("https://api.mangadex.org");
                 HttpResponse<String> httpResponse = Unirest.get("/manga/" +
                                 "?title=" +
-                                searchValue +
+                                encodedSearchValue +
                                 "&order[relevance]=desc")
                         .asString();
 
@@ -244,7 +247,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         getTitle = context.read("$.data[0].attributes.title.*[0]");
                     }
 
-                    Object getDescription = "";
+                    Object getDescription = "__*Esta obra no tiene descripci\u00F3n*__";
                     try {
                         List<Map<String, Object>> dataList = JsonPath.read(parsedJson, "$.data[*].attributes.description");
                         for (Map<String, Object> descriptions : dataList) {
