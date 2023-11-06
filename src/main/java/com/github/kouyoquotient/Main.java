@@ -95,12 +95,10 @@ public class Main {
 //        api.addMessageCreateListener(new AnnouncementsListener());
 
         Path pathToJsonFile = Path.of("response.json");
-        Path imagePath = Path.of("cover.jpg");
-        if (Files.exists(pathToJsonFile) || Files.exists(imagePath)) {
+        if (Files.exists(pathToJsonFile)) {
             try {
                 logger.info("Leftover files found, deleting...");
                 Files.delete(pathToJsonFile);
-                Files.delete(imagePath);
                 logger.info("Files deleted.");
             } catch (IOException e) {
                 logger.error(e);

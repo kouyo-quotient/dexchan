@@ -62,6 +62,5 @@ public class AprobacionCommand implements MessageCreateListener, SlashCommandCre
 
             event.getChannel().sendMessage(message);
         }
-        return;
     }
 }
