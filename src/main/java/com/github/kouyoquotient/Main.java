@@ -5,6 +5,7 @@ import com.github.kouyoquotient.commands.Pull;
 import com.github.kouyoquotient.commands.mdcommands.SearchCommand;
 import com.github.kouyoquotient.commands.mdcommands.TitleCommand;
 import com.github.kouyoquotient.commands.supportchannel.*;
+import com.github.kouyoquotient.listeners.TitleLinkListener;
 import com.github.kouyoquotient.listeners.UserJoinListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +84,7 @@ public class Main {
         api.addSlashCommandCreateListener(new SearchCommand());
 
         api.addMessageCreateListener(new Pull());
+        api.addMessageCreateListener(new TitleLinkListener());
 
         api.addServerMemberJoinListener(new UserJoinListener());
         /*
