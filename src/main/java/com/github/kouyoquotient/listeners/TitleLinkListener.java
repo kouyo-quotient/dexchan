@@ -13,10 +13,12 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -171,6 +173,7 @@ public class TitleLinkListener implements MessageCreateListener {
                         .addInlineField("<:tags:1171482235732504668> G\u00E9neros:", mangaThemeTags)
                         .addInlineField("<:folderopen:1171482185371500684> Temas:", mangaGenreTags)
                         .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
+                        .setColor(new Color( 253,102,63))
                         .setThumbnail(coverArtURItoURL.openStream());
 
                 new MessageBuilder()
