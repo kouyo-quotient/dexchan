@@ -146,7 +146,6 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 }
                             }
 
-
                             Set<String> themeTagsSet = new HashSet<>(themeTags);
                             Set<String> genreTagsSet = new HashSet<>(genreTags);
                             Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
@@ -293,7 +292,6 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     genreTags = new ArrayList<>(genreTagsSet);
                     contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
-
                     Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                     Object mangaAuthorObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'author')].attributes.name");
                     Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
@@ -304,7 +302,6 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     if (publicationDemographic == null) {
                         publicationDemographic = "Esta obra no tiene demograf\u00EDa";
                     }
-
 
                     String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                     String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
