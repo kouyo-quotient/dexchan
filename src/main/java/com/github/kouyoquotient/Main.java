@@ -32,7 +32,7 @@ public class Main {
                 .login()
                 .join();
 
-        if(args.length > 1) {
+        if (args.length > 1) {
             if (Objects.equals(args[1], "-command-register")) {
                 logger.info("Registering commands");
                 // Register commands
