@@ -40,7 +40,7 @@ public class TitleLinkListener implements MessageCreateListener {
          * If this type of link is found, the code stops.
          */
 
-        Pattern noEmbed = Pattern.compile("<(https://mangadex.org/title/([0-9a-fA-F\\\\-]+)(.+))?>");
+        Pattern noEmbed = Pattern.compile("<(https://mangadex\\.org/title/([0-9a-fA-F\\\\-]+)(.+))?>");
         Matcher matchNoEmbedUUID = noEmbed.matcher(event.getMessageContent());
 
         if (matchNoEmbedUUID.find()) {
@@ -162,15 +162,15 @@ public class TitleLinkListener implements MessageCreateListener {
                 EmbedBuilder titleEmbed = new EmbedBuilder()
                         .setTitle("Descripci\u00F3n en espa\u00F1ol:")
                         .setDescription(titleDescription)
-                        .addInlineField("G\u00E9neros:", mangaThemeTags)
-                        .addInlineField("Temas:", mangaGenreTags)
-                        .addInlineField("Advertencias de contenido:", mangaContentWarning)
-                        .addInlineField("Demograf\u00EDa", mangaPubDemographic)
-                        .addInlineField("Clasificaci\u00F3n de contenido:", mangaContentRating)
-                        .addInlineField("Estado de publicaci\u00F3n:", mangaPubStatus)
-                        .addInlineField("A\u00F1o de inicio publicaci\u00F3n:", mangaYearPublication)
-                        .addInlineField("Calificaci\u00F3n promedio:", mangaRatingAverage)
-                        .addInlineField("Seguidores:", mangaFollowCount)
+                        .addInlineField("<:star:1171482195932745769> Calificaci\u00F3n:", mangaRatingAverage)
+                        .addInlineField("<:users:1171482238387507312> Seguidores:", mangaFollowCount)
+                        .addInlineField("<:calendar:1171507628980064306> A\u00F1o:", mangaYearPublication)
+                        .addInlineField("<:bookbookmark:1171482171777757204> Estado de publicaci\u00F3n:", mangaPubStatus)
+                        .addInlineField("<:usersalt:1171482198893940888> Demograf\u00EDa:", mangaPubDemographic)
+                        .addInlineField("<:shieldexclamation:1171506222579589272> Clasificaci\u00F3n de contenido:", mangaContentRating)
+                        .addInlineField("<:tags:1171482235732504668> G\u00E9neros:", mangaThemeTags)
+                        .addInlineField("<:folderopen:1171482185371500684> Temas:", mangaGenreTags)
+                        .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
                         .setThumbnail(coverArtURItoURL.openStream());
 
                 new MessageBuilder()
