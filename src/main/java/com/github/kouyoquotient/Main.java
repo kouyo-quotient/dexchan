@@ -45,7 +45,7 @@ public class Main {
                 SlashCommand.with("title", "Informaci\u00F3n sobre un titulo en MangaDex",
                         Collections.singletonList(
                                 SlashCommandOption.create(SlashCommandOptionType.STRING, "UUID", "UUID del t\u00EDtulo", true)
-                        )).createGlobal(api).join();
+                        )).createGlobal(api).join().delete();
                 SlashCommand.with("search", "Busca un t\u00EDtulo en MangaDex",
                         Arrays.asList(
                                 SlashCommandOption.create(SlashCommandOptionType.STRING, "Nombre", "Nombre del t\u00EDtulo", true),
@@ -83,6 +83,7 @@ public class Main {
         api.addMessageCreateListener(new TitleLinkListener());
 
         api.addServerMemberJoinListener(new UserJoinListener());
+
         /*
          * WARNING:
          * I strongly recommend not enabling the announcements' listener,
