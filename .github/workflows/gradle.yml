@@ -37,9 +37,6 @@ jobs:
         username: ${{secrets.USERNAME}}
         key: ${{secrets.SSH_PRIVATE_KEY}}
         script: |
-          exec bash \-l
           cd dexchan
           git pull origin master
           git status
-          gradle --stop
-          gradle run --args='${{secrets.BOT_KEY}}'
