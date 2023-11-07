@@ -40,3 +40,5 @@ jobs:
           cd dexchan
           git pull origin master
           git status
+          gradle --stop
+          gradle run --args='${{BOT_KEY}}'
