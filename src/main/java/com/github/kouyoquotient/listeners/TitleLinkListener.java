@@ -135,7 +135,6 @@ public class TitleLinkListener implements MessageCreateListener {
                 contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
                 String publicationDemographic = JsonPath.read(titleJson, "$.data.attributes.publicationDemographic");
-                Double ratingAverage = JsonPath.read(titleStatisticsJson, "$.statistics." + uuid + ".rating.average");
 
                 String pubStatus = JsonPath.read(titleJson, "$.data.attributes.status");
                 Object coverArtObject = JsonPath.read(titleJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
@@ -155,7 +154,9 @@ public class TitleLinkListener implements MessageCreateListener {
 
                 String mangaYearPublication = yearPublication != null ? yearPublication.toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
                 String mangaPubDemographic = publicationDemographic != null ? publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1) : "__*Esta obra no tiene demograf\u00EDa*__";
-                String mangaRatingAverage = ratingAverage != null ? ratingAverage.toString().substring(0, 3) : "__*Esta obra a\u00FAn no ha sido calificada*__";
+                Object ratingAverageObject = JsonPath.read(titleStatisticsJson, "$.statistics." + uuid + ".rating.average");
+                String mangaRatingAverage = getRating(ratingAverageObject);
+
 
                 String coverArtURL = "https://uploads.mangadex.org/covers/" + uuid + "/" + mangaCoverArtUUID + ".256.jpg";
                 URI uri = new URI(coverArtURL);
@@ -184,5 +185,21 @@ public class TitleLinkListener implements MessageCreateListener {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static String getRating(Object ratingAverageObject) {
+        String mangaRatingAverage;
+        if (ratingAverageObject != null) {
+            if (ratingAverageObject instanceof Integer) {
+                mangaRatingAverage = String.valueOf(ratingAverageObject);
+            } else if (ratingAverageObject instanceof Double) {
+                mangaRatingAverage = String.format("%.1f", ratingAverageObject);
+            } else {
+                mangaRatingAverage = "__*Esta obra a\u00FAn no ha sido calificada*__";
+            }
+        } else {
+            mangaRatingAverage = "__*Esta obra a\u00FAn no ha sido calificada*__";
+        }
+        return mangaRatingAverage;
     }
 }
