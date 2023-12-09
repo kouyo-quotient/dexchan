@@ -73,6 +73,10 @@ public class TitleLinkListener implements MessageCreateListener {
                         .asString();
                 HttpResponse<String> titleStatistics = Unirest.get("/statistics/manga/" + uuid).asString();
 
+                if(!titleLookup.isSuccess()){
+                    event.getMessage().getChannel().sendMessage("<:selwarning:1061074946526289982> Ha ocurrido un error al realizar esta petici\u00F3n: (MangaDexAPI) - "+titleLookup.getStatusText());
+                }
+
                 Object titleJson = Configuration.defaultConfiguration().jsonProvider().parse(titleLookup.getBody());
                 Object titleStatisticsJson = Configuration.defaultConfiguration().jsonProvider().parse(titleStatistics.getBody());
                 DocumentContext context = JsonPath.parse(titleJson);

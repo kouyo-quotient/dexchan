@@ -51,6 +51,10 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 "&order[relevance]=desc")
                         .asString();
 
+                if(!httpResponse.isSuccess()){
+                    slashCommandCreateEvent.getInteraction().createImmediateResponder().setContent("<:selwarning:1061074946526289982> Ha ocurrido un error al realizar esta petici\u00F3n: (MangaDexAPI) - "+httpResponse.getStatusText()).respond();
+                }
+
                 Object parsedJson = Configuration.defaultConfiguration().jsonProvider().parse(httpResponse.getBody());
 
                 List<String> mainTitles = JsonPath.read(parsedJson, "$.data[*].attributes.title.en");
