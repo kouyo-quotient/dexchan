@@ -175,8 +175,8 @@ public class TitleLinkListener implements MessageCreateListener {
                         .addInlineField("<:bookbookmark:1171482171777757204> Estado de publicaci\u00F3n:", mangaPubStatus)
                         .addInlineField("<:usersalt:1171482198893940888> Demograf\u00EDa:", mangaPubDemographic)
                         .addInlineField("<:shieldexclamation:1171506222579589272> Clasificaci\u00F3n de contenido:", mangaContentRating)
-                        .addInlineField("<:tags:1171482235732504668> G\u00E9neros:", mangaThemeTags)
-                        .addInlineField("<:folderopen:1171482185371500684> Temas:", mangaGenreTags)
+                        .addInlineField("<:tags:1171482235732504668> G\u00E9neros:", mangaGenreTags)
+                        .addInlineField("<:folderopen:1171482185371500684> Temas:", mangaThemeTags)
                         .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
                         .setColor(new Color( 253,102,63))
                         .setThumbnail(coverArtURItoURL.openStream());
