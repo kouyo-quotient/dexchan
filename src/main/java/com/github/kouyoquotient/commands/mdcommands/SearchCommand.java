@@ -16,12 +16,14 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 import org.javacord.api.listener.message.MessageCreateListener;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SearchCommand implements SlashCommandCreateListener, MessageCreateListener {
@@ -77,7 +79,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
 
                 slashCommandCreateEvent.getSlashCommandInteraction().respondLater().thenCompose(interactionOriginalResponseUpdater -> {
                     logger.info("Prompting user with search selection");
-                    interactionOriginalResponseUpdater.setContent("Escribe el n\u00FAmero del manga que deseas \n" + resultFormat).update();
+                    interactionOriginalResponseUpdater.setContent("<:arrowdown:1185274262412611714>  Escribe el n\u00FAmero del manga que deseas *(tienes 15 segundos)*. \n" + resultFormat).update();
 
                     api.addMessageCreateListener(event -> {
                         if (!event.getMessageContent().matches("[0-9]+")) {
@@ -104,6 +106,8 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                             "&includes[]=author" +
                                             "&includes[]=artist")
                                     .asString();
+                            HttpResponse<String> titleStatistics = Unirest.get("/statistics/manga/" + selectedTitle).asString();
+                            Object titleStatisticsJson = Configuration.defaultConfiguration().jsonProvider().parse(titleStatistics.getBody());
                             Object newParsedJson = Configuration.defaultConfiguration().jsonProvider().parse(searchSelectedTitle.getBody());
                             DocumentContext context = JsonPath.parse(parsedJson);
 
@@ -158,6 +162,18 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             genreTags = new ArrayList<>(genreTagsSet);
                             contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
+                            if(themeTags.isEmpty()){
+                                themeTags = Collections.singletonList("__*Esta obra no etiquetas para temas.*__");
+                            }
+
+                            if(genreTags.isEmpty()){
+                                genreTags = Collections.singletonList("__*Esta obra no tiene etiquetas para generos.*__");
+                            }
+
+                            if(contentWarningTags.isEmpty()){
+                                contentWarningTags = Collections.singletonList("__*Esta obra no tiene advertencias de contenido*__");
+                            }
+
 
                             Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                             Object mangaAuthorObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'author')].attributes.name");
@@ -167,9 +183,11 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             String publicationDemographic = JsonPath.read(newParsedJson, "$.data.attributes.publicationDemographic");
 
                             if (publicationDemographic == null) {
-                                publicationDemographic = "Esta obra no tiene demografía";
+                                publicationDemographic = "__*Esta obra no tiene demograf\u00EDa.*__";
                             }
 
+                            Integer yearPublication = JsonPath.read(newParsedJson, "$.data.attributes.year");
+                            String mangaYearPublication = yearPublication != null ? yearPublication.toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
                             String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                             String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
                             String mangaArtistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
@@ -181,6 +199,12 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
                             String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
                             String mangaPubDemographic = publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1);
+                            int followCount = JsonPath.read(titleStatisticsJson, "$.statistics." + selectedTitle + ".follows");
+
+                            Object ratingAverageObject = JsonPath.read(titleStatisticsJson, "$.statistics." + selectedTitle + ".rating.average");
+                            String mangaRatingAverage = getRating(ratingAverageObject);
+
+                            String mangaFollowCount = String.format("%,d", followCount);
 
                             String coverArtURL = "https://uploads.mangadex.org/covers/" + selectedTitle + "/" + mangaCoverArtUUID + ".256.jpg";
                             URI uri = new URI(coverArtURL);
@@ -191,16 +215,20 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                     .setUrl("https://mangadex.org/title/" + selectedTitle)
                                     .setDescription(titleDescription)
                                     .setAuthor("MangaDex", "", "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
-                                    .addInlineField("Autor(es):", mangaAuthorNames)
-                                    .addInlineField("Artista(s):", mangaArtistNames)
-                                    .addInlineField("Estado de publicaci\u00F3n:", mangaPubStatus)
-                                    .addInlineField("Clasificaci\u00F3n de contenido:", mangaContentRating)
-                                    .addInlineField("Advertencias de contenido:", mangaContentWarning)
-                                    .addInlineField("Demograf\u00EDa", mangaPubDemographic)
-                                    .addInlineField("G\u00E9neros:", mangaThemeTags)
-                                    .addInlineField("Temas:", mangaGenreTags)
+                                    .addInlineField("<:iconautor:1185278365981216830>  Autor(es):", mangaAuthorNames)
+                                    .addInlineField("<:iconartist:1185278332019953746>  Artista(s):", mangaArtistNames)
+                                    .addInlineField("<:bookbookmark:1171482171777757204> Estado de publicaci\u00F3n:", mangaPubStatus)
+                                    .addInlineField("<:shieldexclamation:1171506222579589272> Clasificaci\u00F3n de contenido:", mangaContentRating)
+                                    .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
+                                    .addInlineField("<:usersalt:1171482198893940888> Demograf\u00EDa:", mangaPubDemographic)
+                                    .addField("<:tags:1171482235732504668> G\u00E9neros:", mangaGenreTags)
+                                    .addField("<:folderopen:1171482185371500684> Temas:", mangaThemeTags)
+                                    .addInlineField("<:star:1171482195932745769> Calificaci\u00F3n:", mangaRatingAverage)
+                                    .addInlineField("<:users:1171482238387507312> Seguidores:", mangaFollowCount)
+                                    .addInlineField("<:calendar:1171507628980064306> A\u00F1o:", mangaYearPublication)
 //                                    .addInlineField("Leelo o compralo:", "")
 //                                    .addInlineField("Rastreo:", ""))
+                                    .setColor(new Color( 253,102,63))
                                     .setThumbnail(coverArtURItoURL.openStream());
 
                             event.getMessage().reply(responseEmbed).join();
@@ -208,7 +236,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         } catch (IOException | URISyntaxException e) {
                             throw new RuntimeException(e);
                         }
-                    }).removeAfter(10, TimeUnit.SECONDS);
+                    }).removeAfter(15, TimeUnit.SECONDS);
                     return null;
                 });
                 return;
@@ -242,7 +270,10 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                     "&includes[]=author" +
                                     "&includes[]=artist")
                             .asString();
+                    HttpResponse<String> titleStatistics = Unirest.get("/statistics/manga/" + relevantTitleID).asString();
+                    Object titleStatisticsJson = Configuration.defaultConfiguration().jsonProvider().parse(titleStatistics.getBody());
                     Object newParsedJson = Configuration.defaultConfiguration().jsonProvider().parse(searchSelectedTitle.getBody());
+
                     DocumentContext context = JsonPath.parse(parsedJson);
 
                     Object getTitle = context.read("$.data[0].attributes.title.en");
@@ -296,6 +327,18 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     genreTags = new ArrayList<>(genreTagsSet);
                     contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
+                    if(themeTags.isEmpty()){
+                        themeTags = Collections.singletonList("__*Esta obra no etiquetas para temas.*__");
+                    }
+
+                    if(genreTags.isEmpty()){
+                        genreTags = Collections.singletonList("__*Esta obra no tiene etiquetas para generos.*__");
+                    }
+
+                    if(contentWarningTags.isEmpty()){
+                        contentWarningTags = Collections.singletonList("__*Esta obra no tiene advertencias de contenido*__");
+                    }
+
                     Object coverArtObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'cover_art')].attributes.fileName");
                     Object mangaAuthorObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'author')].attributes.name");
                     Object mangaArtistObject = JsonPath.read(newParsedJson, "$.data.relationships[?(@.type == 'artist')].attributes.name");
@@ -307,6 +350,8 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                         publicationDemographic = "Esta obra no tiene demograf\u00EDa";
                     }
 
+                    Integer yearPublication = JsonPath.read(newParsedJson, "$.data.attributes.year");
+                    String mangaYearPublication = yearPublication != null ? yearPublication.toString() : "__*Esta obra no tiene a\u00F1o de publicaci\u00F3n*__";
                     String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
                     String mangaAuthorNames = mangaAuthorObject.toString().replaceAll("[\\[\\]\"]", "");
                     String mangaArtistNames = mangaArtistObject.toString().replaceAll("[\\[\\]\"]", "");
@@ -318,6 +363,12 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                     String mangaPubStatus = pubStatus.substring(0, 1).toUpperCase() + pubStatus.substring(1);
                     String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
                     String mangaPubDemographic = publicationDemographic.substring(0, 1).toUpperCase() + publicationDemographic.substring(1);
+                    int followCount = JsonPath.read(titleStatisticsJson, "$.statistics." + relevantTitleID + ".follows");
+
+                    Object ratingAverageObject = JsonPath.read(titleStatisticsJson, "$.statistics." + relevantTitleID + ".rating.average");
+                    String mangaRatingAverage = getRating(ratingAverageObject);
+
+                    String mangaFollowCount = String.format("%,d", followCount);
 
                     String coverArtURL = "https://uploads.mangadex.org/covers/" + relevantTitleID + "/" + mangaCoverArtUUID + ".256.jpg";
                     URI uri = new URI(coverArtURL);
@@ -328,16 +379,20 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                             .setUrl("https://mangadex.org/title/" + relevantTitleID)
                             .setDescription(titleDescription)
                             .setAuthor("MangaDex", "", "https://cdn.discordapp.com/attachments/1000809614377500832/1169690488564088972/mangadex-logo.png")
-                            .addInlineField("Autor(es):", mangaAuthorNames)
-                            .addInlineField("Artista(s):", mangaArtistNames)
-                            .addInlineField("Estado de publicaci\u00F3n:", mangaPubStatus)
-                            .addInlineField("Clasificaci\u00F3n de contenido:", mangaContentRating)
-                            .addInlineField("Advertencias de contenido:", mangaContentWarning)
-                            .addInlineField("Demograf\u00EDa", mangaPubDemographic)
-                            .addInlineField("G\u00E9neros:", mangaThemeTags)
-                            .addInlineField("Temas:", mangaGenreTags)
+                            .addInlineField("<:iconautor:1185278365981216830>  Autor(es):", mangaAuthorNames)
+                            .addInlineField("<:iconartist:1185278332019953746>  Artista(s):", mangaArtistNames)
+                            .addInlineField("<:bookbookmark:1171482171777757204> Estado de publicaci\u00F3n:", mangaPubStatus)
+                            .addInlineField("<:shieldexclamation:1171506222579589272> Clasificaci\u00F3n de contenido:", mangaContentRating)
+                            .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
+                            .addInlineField("<:usersalt:1171482198893940888> Demograf\u00EDa:", mangaPubDemographic)
+                            .addField("<:tags:1171482235732504668> G\u00E9neros:", mangaGenreTags)
+                            .addField("<:folderopen:1171482185371500684> Temas:", mangaThemeTags)
+                            .addInlineField("<:star:1171482195932745769> Calificaci\u00F3n:", mangaRatingAverage)
+                            .addInlineField("<:users:1171482238387507312> Seguidores:", mangaFollowCount)
+                            .addInlineField("<:calendar:1171507628980064306> A\u00F1o:", mangaYearPublication)
 //                                    .addInlineField("Leelo o compralo:", "")
 //                                    .addInlineField("Rastreo:", ""))
+                            .setColor(new Color( 253,102,63))
                             .setThumbnail(coverArtURItoURL.openStream());
 
                     interactionOriginalResponseUpdater.addEmbed(responseEmbed).update().join();
@@ -352,5 +407,21 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
 
+    }
+
+    private static String getRating(Object ratingAverageObject) {
+        String mangaRatingAverage;
+        if (ratingAverageObject != null) {
+            if (ratingAverageObject instanceof Integer) {
+                mangaRatingAverage = String.valueOf(ratingAverageObject);
+            } else if (ratingAverageObject instanceof Double) {
+                mangaRatingAverage = String.format("%.1f", ratingAverageObject);
+            } else {
+                mangaRatingAverage = "__*Esta obra a\u00FAn no ha sido calificada*__";
+            }
+        } else {
+            mangaRatingAverage = "__*Esta obra a\u00FAn no ha sido calificada*__";
+        }
+        return mangaRatingAverage;
     }
 }
