@@ -130,7 +130,7 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 getTitle = JsonPath.read(selectedTitleJson, "$.data.attributes.title.*[0]");
                             }
 
-                            String getDescription = "__*No se encontr\u00F3 descripci\u00F3n en espa\u00F1ol para esta obra*__";
+                            String getDescription = "";
                             try {
                                 Map<String, Object> descriptionMap = JsonPath.read(selectedTitleJson, "$.data.attributes.description");
                                 if (descriptionMap.isEmpty()) {
