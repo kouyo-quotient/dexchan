@@ -108,35 +108,31 @@ public class TitleLinkListener implements MessageCreateListener {
                     getTitle = context.read("$.data.attributes.title.*[0]");
                 }
 
-                LinkedHashMap<String, Object> data = JsonPath.read(titleJson, "$.data");
-
-                List<LinkedHashMap<String, Object>> tags = (List<LinkedHashMap<String, Object>>) ((LinkedHashMap<String, Object>) data.get("attributes")).get("tags");
-
-                List<String> themeTags = new ArrayList<>();
+                List<Map<String, Object>> tags = JsonPath.read(titleJson, "$.data.attributes.tags[?(@.type == 'tag')].attributes");
                 List<String> genreTags = new ArrayList<>();
+                List<String> themeTags = new ArrayList<>();
+                List<String> formatTags = new ArrayList<>();
                 List<String> contentWarningTags = new ArrayList<>();
 
-                for (LinkedHashMap<String, Object> tag : tags) {
-                    LinkedHashMap<String, Object> attributes = (LinkedHashMap<String, Object>) tag.get("attributes");
-                    LinkedHashMap<String, Object> nameObject = (LinkedHashMap<String, Object>) attributes.get("name");
-                    String name = (String) nameObject.get("en");
+                for (Map<String, Object> tag : tags) {
+                    String name = (String) ((Map<String, Object>) tag.get("name")).get("en");
+                    String group = (String) tag.get("group");
 
-                    if ("theme".equals(attributes.get("group"))) {
-                        themeTags.add(name);
-                    } else if ("genre".equals(attributes.get("group"))) {
-                        genreTags.add(name);
-                    } else if ("content".equals(attributes.get("group"))) {
-                        contentWarningTags.add(name);
+                    switch (group) {
+                        case "genre":
+                            genreTags.add(name);
+                            break;
+                        case "theme":
+                            themeTags.add(name);
+                            break;
+                        case "format":
+                            formatTags.add(name);
+                            break;
+                        case "content":
+                            contentWarningTags.add(name);
+                            break;
                     }
                 }
-
-                Set<String> themeTagsSet = new HashSet<>(themeTags);
-                Set<String> genreTagsSet = new HashSet<>(genreTags);
-                Set<String> contentWarningTagsSet = new HashSet<>(contentWarningTags);
-
-                themeTags = new ArrayList<>(themeTagsSet);
-                genreTags = new ArrayList<>(genreTagsSet);
-                contentWarningTags = new ArrayList<>(contentWarningTagsSet);
 
                 String publicationDemographic = JsonPath.read(titleJson, "$.data.attributes.publicationDemographic");
 
@@ -148,9 +144,10 @@ public class TitleLinkListener implements MessageCreateListener {
                 String mangaFollowCount = String.format("%,d", followCount);
 
                 String titleDescription = getDescription.replaceAll("[\\[\\]\"]", "");
-                String mangaThemeTags = themeTags.toString().replaceAll("[\\[\\]\"]", "");
-                String mangaGenreTags = genreTags.toString().replaceAll("[\\[\\]\"]", "");
-                String mangaContentWarning = contentWarningTags.toString().replaceAll("[\\[\\]\"]", "");
+                String mangaThemeTags = !themeTags.isEmpty() ? themeTags.toString().replaceAll("[\\[\\]\"]", "") : "__*Esta obra no tiene etiquetas de temas*__";
+                String mangaGenreTags = !genreTags.isEmpty() ? genreTags.toString().replaceAll("[\\[\\]\"]", "") : "__*Esta obra no tiene etiquetas de genero*__";
+                String mangaFormatTags = !formatTags.isEmpty() ? formatTags.toString().replaceAll("[\\[\\]\"]", "") : "__*Esta obra no tiene etiquetas de formato*__";
+                String mangaContentWarning = !contentWarningTags.isEmpty() ? contentWarningTags.toString().replaceAll("[\\[\\]\"]", "") : "__*Esta obra no tiene advertencias de contenido*__";
                 String mangaContentRating = contentRating.substring(0, 1).toUpperCase() + contentRating.substring(1);
                 String mangaTitle = getTitle.replaceAll("[\\[\\]\"]", "");
                 String mangaCoverArtUUID = coverArtObject.toString().replaceAll("[\\[\\]\"]", "");
@@ -175,9 +172,10 @@ public class TitleLinkListener implements MessageCreateListener {
                         .addInlineField("<:bookbookmark:1171482171777757204> Estado de publicaci\u00F3n:", mangaPubStatus)
                         .addInlineField("<:usersalt:1171482198893940888> Demograf\u00EDa:", mangaPubDemographic)
                         .addInlineField("<:shieldexclamation:1171506222579589272> Clasificaci\u00F3n de contenido:", mangaContentRating)
-                        .addInlineField("<:tags:1171482235732504668> G\u00E9neros:", mangaGenreTags)
-                        .addInlineField("<:folderopen:1171482185371500684> Temas:", mangaThemeTags)
                         .addInlineField("<:18:1171482170615926845> Advertencias de contenido:", mangaContentWarning)
+                        .addField("<:format:1192283519486001272> Formatos:", mangaFormatTags)
+                        .addField("<:tags:1171482235732504668> G\u00E9neros:", mangaGenreTags)
+                        .addField("<:folderopen:1171482185371500684> Temas:", mangaThemeTags)
                         .setColor(new Color( 253,102,63))
                         .setThumbnail(coverArtURItoURL.openStream());
 
