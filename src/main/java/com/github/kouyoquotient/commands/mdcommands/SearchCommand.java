@@ -130,12 +130,22 @@ public class SearchCommand implements SlashCommandCreateListener, MessageCreateL
                                 getTitle = JsonPath.read(selectedTitleJson, "$.data.attributes.title.*[0]");
                             }
 
-                            String getDescription = JsonPath.read(selectedTitleJson, "$.data.attributes.description.en");
-                            if (getDescription == null) {
-                                Object getAnyDescription = JsonPath.read(selectedTitleJson, "$.data.attributes.description.*");
-                                if(getAnyDescription == null){
-                                    getDescription = "__*Esta obra no tiene descripci\u00F3n*__";
+                            String getDescription = "__*No se encontr\u00F3 descripci\u00F3n en espa\u00F1ol para esta obra*__";
+                            try {
+                                Map<String, Object> descriptionMap = JsonPath.read(selectedTitleJson, "$.data.attributes.description");
+                                if (descriptionMap.isEmpty()) {
+                                    getDescription = "__*Esta obra no tiene ninguna descripci\u00F3n*__";
+                                } else {
+                                    if (descriptionMap.containsKey("es-la")) {
+                                        getDescription = descriptionMap.get("es-la").toString();
+                                    } else if (descriptionMap.containsKey("es")) {
+                                        getDescription = descriptionMap.get("es").toString();
+                                    } else if (descriptionMap.containsKey("en")){
+                                        getDescription = descriptionMap.get("en").toString();
+                                    }
                                 }
+                            } catch (PathNotFoundException e) {
+                                logger.error(e);
                             }
 
                             List<Map<String, Object>> tags = JsonPath.read(selectedTitleJson, "$.data.attributes.tags[?(@.type == 'tag')].attributes");
