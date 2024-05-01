@@ -25,7 +25,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
     implementation 'com.vdurmont:emoji-java:5.1.1'
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.jayway.jsonpath:json-path:2.8.0'
+    implementation 'com.jayway.jsonpath:json-path:2.9.0'
     implementation 'net.minidev:json-smart:2.5.0'
     implementation 'redis.clients:jedis:5.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
